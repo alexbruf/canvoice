@@ -21,7 +21,6 @@ from flask import escape
 # [END functions_helloworld_http]
 # [END functions_http_content]
 
-
 # [START functions_helloworld_get]
 def hello_get(request):
     """HTTP Cloud Function.
@@ -36,6 +35,66 @@ def hello_get(request):
     return 'Hello World!'    
 # [END functions_helloworld_get]
 
+
+def parse_webhook_request(request_json):
+    '''
+    Should return a parsed object:
+    {
+        'detect_intent_response_id': string,
+        'intent': {
+            'intent_id': string,
+            'params': map<string, Value>
+        },
+        'tag': string, # use this to determine action to take
+        'session': {
+            'session_id': string,
+            'params': map<string, Value>
+        }
+    }
+    '''
+    parsed = {}
+    parsed['detect_intent_response_id'] = request_json.get('detect_intent_response_id', '')
+    intent_info = request_json.get('intent_info')
+    if len(intent_info) > 0:
+        parsed['intent'] = {
+            'intent_id': intent_info[0]['last_matched_intent']
+        }
+
+        parsed['intent']['params'] = {}
+        params = intent_info[0]['parameters']
+        for param in params.keys():
+            parsed['intent']['params'][param] = params[param]['resolved_value']
+
+    parsed['tag'] = request_json.get('fulfillment_info', '')
+    
+    
+    session_info = request_json.get('session_info')
+    if session_info:
+        parsed['session'] = {
+            'session_id': session_info['session'],
+            'params': {}
+        }
+        params = session_info['parameters']
+        for param in params.keys():
+            parsed['session']['params'][param] = params[param]
+    
+    return parsed
+
+
+def generate_webhook_response(messages, request_json):
+    resp = {}
+    resp['page_info'] = request_json['page_info']
+    resp['session_info'] = request_json['session_info']
+    resp['payload'] = request_json['payload']
+    resp['fulfillment_response'] =  {
+        'messages': messages,
+        'merge_behavior': 'REPLACE'
+    }
+
+def process_todo(req):
+    return 'Nothing new!'
+
+
 def backend_activate(request):
     """Responds to any HTTP request.
     Args:
@@ -45,11 +104,17 @@ def backend_activate(request):
         Response object using
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
+
     request_json = request.get_json()
-    if request.args and 'message' in request.args:
-        return request.args.get('message')
-    elif request_json and 'message' in request_json:
-        return request_json['message']
-    else:
-        return f'Hello World!'
+    if not request.args:
+        raise Exception()
+    
+    req = parse_webhook_request(request_json)
+
+    if req['tag'] == 'todo':
+        resp = process_todo(req)
+        return generate_webhook_response([resp], request_json)
+
+    # no intent found
+    raise Exception()
 
