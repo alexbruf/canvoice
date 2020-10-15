@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h1>Canvoice Debugger Front End</h1>
+
+    <input id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
+
+    <button type="button" onclick="myFunction()">Submit</button>
+
+    <p id="demo">This is a demonstration.</p>
+
+    <p id="result">this is where our dialogflow response will go</p>
+
+    <script>
+        function myFunction() {
+            //this is a debugging 
+            document.getElementById("demo").innerHTML = document.getElementById("input").value;
+
+            //this is the POST request
+            url =
+                "https://dialogflow.googleapis.com/v3beta1/projects/canvoice-292621/locations/us/agents/bcb4ddc7-823b-4a73-8eac-37415c09ca17/sessions/0:detectIntent"
+            fetch(url, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "queryInput": {
+                            "text": {
+                                "text": document.getElementById("input").value
+                            },
+                            "languageCode": "en"
+                        },
+                        "queryParams": {
+                            "timeZone": "America/New_York"
+                        }
+                    }),
+                })
+                .then((response) => {
+                    if (!response.ok) throw Error(response.statusText);
+                    return response.json();
+                })
+                .then((data) => {
+                    document.getElementById("result").innerHTML = JSON.stringify(data);
+                })
+                .catch((error) => console.log(error));
+            event.target.reset();
+        }
+    </script>
+
+</body>
+
+</html>
