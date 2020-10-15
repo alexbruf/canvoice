@@ -1,9 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Canvoice Debugger Front End</h1>
+
+<input id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
+
+<button type="button" onclick="myFunction()">Submit</button>
+
+<p id="demo">This is a demonstration.</p>
+
 <script>
-    function submit(){
-        alert("you submitted something")
-    }
+function myFunction() { 
+    document.getElementById("demo").innerHTML = document.getElementById("input").value;
+}
 </script>
 
-<form className="comment-form" onSubmit="submit()">
-    <input type="text" name="text" defaultValue="" />
-</form>
+</body>
+</html>
