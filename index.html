@@ -5,6 +5,8 @@
 
     <h1>Canvoice Debugger Front End</h1>
 
+    <input id="key" type="text" name="text" defaultValue="" placeholder="dialogflow token here" />
+
     <input id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
 
     <button type="button" onclick="myFunction()">Submit</button>
@@ -48,8 +50,7 @@
             document.getElementById("demo").innerHTML = document.getElementById("input").value;
 
             //authorizing here
-            var key =
-                "ya29.c.KpYB4Qcx6LzZE_LYCsSNvtsdYY1AX941WUGCcq3lAjPBNiOTjp16kqx2du3hTBLFNf5sDzcVTy4xGJfdeBq179WZVvC_tKQepa1qNJwscckIe71rO817aABWpcbxxauf7A33OMT_a8MeVdbyGW0uwqzJcPTG6lX1_7sRkPvZgO07b8iJ870GupKYwlbKn2G2cQHX2z-dcWAp"
+            var key = document.getElementById("key").value;
             // var scopes = 'https://www.googleapis.com/auth/dialogflow';
             // gapi.client.setApiKey(key);
             // gapi.auth.authorize({
