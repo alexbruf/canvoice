@@ -13,10 +13,47 @@
 
     <p id="result">this is where our dialogflow response will go</p>
 
+    <script src="https://apis.google.com/js/client.js"></script>
+
     <script>
+        function authorize() {
+            var key = "Mu3ayoHYX0Vynlp_4zZLF9S0"
+            var scopes = 'https://www.googleapis.com/auth/dialogflow';
+            gapi.client.setApiKey(key);
+            gapi.auth.authorize({
+                client_id: '551722328649-jbplnqf7jk4480mddeq8qa96i0kn5bat.apps.googleusercontent.com',
+                scope: scopes,
+                immediate: false
+            }, function (authResult) {
+                if (authResult && !authResult.error) {
+                    window.alert('Auth was successful!');
+                } else {
+                    window.alert('Auth was not successful');
+                }
+            });
+
+        }
+
         function myFunction() {
             //this is a debugging 
             document.getElementById("demo").innerHTML = document.getElementById("input").value;
+
+            //authorizing here
+            var key =
+                "ya29.c.KpYB4Qcx6LzZE_LYCsSNvtsdYY1AX941WUGCcq3lAjPBNiOTjp16kqx2du3hTBLFNf5sDzcVTy4xGJfdeBq179WZVvC_tKQepa1qNJwscckIe71rO817aABWpcbxxauf7A33OMT_a8MeVdbyGW0uwqzJcPTG6lX1_7sRkPvZgO07b8iJ870GupKYwlbKn2G2cQHX2z-dcWAp"
+            // var scopes = 'https://www.googleapis.com/auth/dialogflow';
+            // gapi.client.setApiKey(key);
+            // gapi.auth.authorize({
+            //     client_id: '551722328649-jbplnqf7jk4480mddeq8qa96i0kn5bat.apps.googleusercontent.com',
+            //     scope: scopes,
+            //     immediate: false
+            // }, function (authResult) {
+            //     if (authResult && !authResult.error) {
+            //         window.alert('Auth was successful!');
+            //     } else {
+            //         window.alert('Auth was not successful');
+            //     }
+            // });
 
             //this is the POST request
             url =
@@ -25,7 +62,8 @@
                     method: 'POST',
                     credentials: 'same-origin',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + key,
                     },
                     body: JSON.stringify({
                         "queryInput": {
@@ -41,13 +79,12 @@
                 })
                 .then((response) => {
                     if (!response.ok) throw Error(response.statusText);
-                    return response.json();
+                    return response
                 })
                 .then((data) => {
-                    document.getElementById("result").innerHTML = JSON.stringify(data);
+                    document.getElementById("result").innerHTML = data;
                 })
                 .catch((error) => console.log(error));
-            event.target.reset();
         }
     </script>
 
