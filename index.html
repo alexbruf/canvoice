@@ -9,9 +9,18 @@
 
     <button type="button" onclick="myFunction()">Submit</button>
 
-    <p id="demo">This is a demonstration.</p>
+    <p> You said: </p>
+
+    <p id="demo">Here we will Parot your input</p>
+
+    <p>
+        Dialogflow result:
+    </p>
 
     <p id="result">this is where our dialogflow response will go</p>
+
+    <p>Raw output:</p>
+    <p id="raw"></p>
 
     <script src="https://apis.google.com/js/client.js"></script>
 
@@ -79,10 +88,11 @@
                 })
                 .then((response) => {
                     if (!response.ok) throw Error(response.statusText);
-                    return response
+                    return response.json();
                 })
                 .then((data) => {
-                    document.getElementById("result").innerHTML = data;
+                    document.getElementById("result").innerHTML = JSON.stringify(data.queryResult.responseMessages)
+                    document.getElementById("raw").innerHTML = JSON.stringify(data);
                 })
                 .catch((error) => console.log(error));
         }
