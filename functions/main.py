@@ -13,32 +13,10 @@
 # limitations under the License.
 
 import sys
-
 from helper import parse_webhook_request, generate_webhook_response, get_api_key
-
 from api import CanvasAPI
 from datetime import datetime
-
-# [START functions_helloworld_http]
-# [START functions_http_content]
 from flask import escape
-
-# [START functions_helloworld_get]
-def hello_get(request):
-    """HTTP Cloud Function.
-    Args:
-        request (flask.Request): The request object.
-        <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
-    Returns:
-        The response text, or any set of values that can be turned into a
-        Response object using `make_response`
-        <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
-    """
-    return 'Hello World!'    
-# [END functions_helloworld_get]
-
-# [BEGIN processing functions]
-
 
 def process_todo(req):
     try:
