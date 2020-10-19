@@ -16,7 +16,8 @@ import sys
 from helper import parse_webhook_request, generate_webhook_response, get_api_key
 from api import CanvasAPI
 from datetime import datetime
-from flask import escape
+from flask import escape, jsonify
+import json
 
 def process_todo(req):
     try:
@@ -29,8 +30,8 @@ def process_todo(req):
     todos = canvas.get_todo() # next 7 days of todos
     if len(todos) == 0:
         return 'You have nothing new due!'
-    
-    todo_on = ['{0} on {1}'.format(todo.title, todo.start_at.strftime("%A, %B %d")) for todo in todos]
+
+    todo_on = ['{0} on {1}'.format(todo.title, todo.start_at) for todo in todos]
     return 'You have ' + ' and '.join(todo_on)
 
 
@@ -45,14 +46,16 @@ def backend_activate(request):
     """
 
     request_json = request.get_json()
-    if not request.args:
+    if not request_json:
         raise Exception()
     
     req = parse_webhook_request(request_json)
+    print(json.dumps(request_json))
+    print(json.dumps(req))
 
     if req['tag'] == 'todo':
         resp = process_todo(req)
-        return generate_webhook_response([resp], request_json)
+        return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
     raise Exception()

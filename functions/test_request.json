@@ -1,15 +1,15 @@
 {
-  "detect_intent_response_id": "test_id",
-  "intent_info": {
-      "last_matched_intent": "test_intent_id",
+  "detectIntentResponseId": "test_id",
+  "intentInfo": {
+      "lastMatchedIntent": "test_intent_id",
       "parameters": {
-        "test_param0": {"resolved_value": "test_param_value"},
-        "test_param1": {"resolved_value": 0},
-        "test_param2": {"resolved_value": false}
+        "test_param0": {"resolvedValue": "test_param_value"},
+        "test_param1": {"resolvedValue": 0},
+        "test_param2": {"resolvedValue": false}
       }
     },
-  "fulfillment_info": {"tag": "todo"},
-  "session_info": {
+  "fulfillmentInfo": {"tag": "todo"},
+  "sessionInfo": {
       "session": "test_session_id",
       "parameters": {
         "test_param0": "test_param_value",
