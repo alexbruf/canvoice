@@ -28,11 +28,16 @@ class CanvasAPI:
     start: int (default 0)
     limit: int (default 10)
     '''
-    active_courses = self.canvas.get_user('self').get_courses(enrollement_state='active')
-    convert_to_context_code: lambda course: 'course_' + str(course.id)
+    active_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    convert_to_context_code = lambda course: 'course_' + str(course.id)
 
-    context_codes = [convert_to_context_code(course) for course in active_courses]
-    return list(self.canvas.get_user('self')
-                .self.get_calendar_events_for_user(context_codes=context_codes,
+    context_codes = [convert_to_context_code(course) for course in list(active_courses)]
+    res = list(self.canvas.get_user('self')
+                .get_calendar_events_for_user(context_codes=context_codes,
                                                   start_date=start_date,
-                                                  end_date=end_date)[start:limit])
+                                                  type='assignment',
+                                                  end_date=end_date))
+    if len(res) == 0:
+      return []
+    
+    return res[start:limit]

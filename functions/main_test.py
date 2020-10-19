@@ -1,27 +1,52 @@
 from unittest.mock import Mock
-
+from unittest import TestCase, mock
 import main
+import json
+from canvasapi.calendar_event import CalendarEvent
+from datetime import datetime
 
-def test_todo_intent():
-    req_spoof =  {
-        'detect_intent_response_id': 'string',
-        'intent': {
-            'intent_id': 'string',
-            'params': {}
-        },
-        'tag': 'todo', # use this to determine action to take
-        'session': {
-            'session_id': 'string',
-            'params': {}
-        }
-    }
-    assert main.process_todo(req_spoof) == 'Nothing new!'
+now = datetime.now()
 
-#TODO
-def test_backend_activate():
+@mock.patch('main.CanvasAPI.get_todo')
+def test_todo_intent(mocked_api):
+    f = open('test_request.json', 'rb')
+    if not f:
+        raise Exception()
+
+    req = json.load(f)
+    req['fulfillment_info'] = {'tag': 'todo'}
+ 
+    mocked_api.return_value = [CalendarEvent(None, {
+                'title': 'test',
+                'start_at': now
+            })]
+    assert main.process_todo(req) == 'You have test on ' + now.strftime("%A, %B %d")
+    mocked_api.assert_called_once()
+
+# #TODO
+@mock.patch('main.CanvasAPI.get_todo')
+def test_backend_activate_todo(mocked_api):
     name = 'test'
-    data = {'name': name} # replace with request
+    f = open('test_request.json', 'rb')
+    if not f:
+        raise Exception()
+
+    data = json.load(f) # replace with request
+    data['fulfillment_info'] = {'tag': 'todo'}
+    mocked_api.return_value = [CalendarEvent(None, {
+                'title': 'test',
+                'start_at': now
+            })]
     req = Mock(get_json=Mock(return_value=data), args=data)
 
     # Call tested function
-    assert main.backend_activate(req) == 'Hello!' ## replace with good test
+    test_resp = {
+        'session_info': data['session_info'],
+        'fulfillment_response': {
+            'messages': ['You have test on ' + now.strftime("%A, %B %d")],
+            'merge_behavior': 'REPLACE'
+        },
+        'page_info': None,
+        'payload': None
+    }
+    assert main.backend_activate(req) == test_resp ## replace with good test

@@ -1,0 +1,20 @@
+{
+  "detect_intent_response_id": "test_id",
+  "intent_info": {
+      "last_matched_intent": "test_intent_id",
+      "parameters": {
+        "test_param0": {"resolved_value": "test_param_value"},
+        "test_param1": {"resolved_value": 0},
+        "test_param2": {"resolved_value": false}
+      }
+    },
+  "fulfillment_info": {"tag": "todo"},
+  "session_info": {
+      "session": "test_session_id",
+      "parameters": {
+        "test_param0": "test_param_value",
+        "test_param1": 0,
+        "test_param2": false
+      }
+    }
+}
