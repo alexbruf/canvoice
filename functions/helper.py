@@ -1,4 +1,5 @@
 import json
+import os
 
 def parse_webhook_request(request_json):
     '''
@@ -45,11 +46,20 @@ def parse_webhook_request(request_json):
     return parsed
 
 def get_api_key():
-  with open('../api_key.json', 'rb') as file:
-    j = json.load(file)
-    return j['canvas_api_key']
-  
-  raise Exception()
+    func_name = os.environ.get('FUNCTION_NAME', None)
+    if func_name:
+        #production environment
+        api_key = os.environ.get('CANVAS_API_KEY', None)
+        if api_key:
+            return api_key
+        else:
+            raise Exception()
+
+    with open('../api_key.json', 'rb') as file:
+        j = json.load(file)
+        return j['canvas_api_key']
+
+    raise Exception()
 
 def generate_webhook_response(messages, request_json):
     '''
