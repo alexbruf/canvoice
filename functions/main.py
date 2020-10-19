@@ -29,8 +29,8 @@ def process_todo(req):
     todos = canvas.get_todo() # next 7 days of todos
     if len(todos) == 0:
         return 'You have nothing new due!'
-
-    todo_on = ['{0} on {1}'.format(todo.title, datetime(todo.start_at).strftime("%A, %B %d")) for todo in todos]
+    
+    todo_on = ['{0} on {1}'.format(todo.title, todo.start_at.strftime("%A, %B %d")) for todo in todos]
     return 'You have ' + ' and '.join(todo_on)
 
 

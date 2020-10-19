@@ -18,18 +18,18 @@ def parse_webhook_request(request_json):
     '''
     parsed = {}
     parsed['detect_intent_response_id'] = request_json.get('detect_intent_response_id', '')
-    intent_info = request_json.get('intent_info')
-    if len(intent_info) > 0:
+    intent_info = request_json.get('intent_info', None)
+    if intent_info:
         parsed['intent'] = {
-            'intent_id': intent_info[0]['last_matched_intent']
+            'intent_id': intent_info['last_matched_intent']
         }
 
         parsed['intent']['params'] = {}
-        params = intent_info[0]['parameters']
+        params = intent_info['parameters']
         for param in params.keys():
             parsed['intent']['params'][param] = params[param]['resolved_value']
 
-    parsed['tag'] = request_json.get('fulfillment_info', '')
+    parsed['tag'] = request_json.get('fulfillment_info', {}).get('tag')
     
     
     session_info = request_json.get('session_info')
@@ -52,10 +52,14 @@ def get_api_key():
   raise Exception()
 
 def generate_webhook_response(messages, request_json):
+    '''
+    messages: string[]
+    request_json: json
+    '''
     resp = {}
-    resp['page_info'] = request_json['page_info']
-    resp['session_info'] = request_json['session_info']
-    resp['payload'] = request_json['payload']
+    resp['page_info'] = request_json.get('page_info', None)
+    resp['session_info'] = request_json.get('session_info', None)
+    resp['payload'] = request_json.get('payload', None)
     resp['fulfillment_response'] =  {
         'messages': messages,
         'merge_behavior': 'REPLACE'
