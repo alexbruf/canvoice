@@ -18,9 +18,9 @@ def test_todo_intent(mocked_api):
  
     mocked_api.return_value = [CalendarEvent(None, {
                 'title': 'test',
-                'start_at': now
+                'start_at': now.isoformat()
             })]
-    assert main.process_todo(req) == 'You have test on ' + now.strftime("%A, %B %d")
+    assert main.process_todo(req) == 'You have test on ' + now.isoformat()
     mocked_api.assert_called_once()
 
 # #TODO
@@ -32,21 +32,21 @@ def test_backend_activate_todo(mocked_api):
         raise Exception()
 
     data = json.load(f) # replace with request
-    data['fulfillment_info'] = {'tag': 'todo'}
+    data['fulfillmentInfo'] = {'tag': 'todo'}
     mocked_api.return_value = [CalendarEvent(None, {
                 'title': 'test',
-                'start_at': now
+                'start_at': now.isoformat()
             })]
     req = Mock(get_json=Mock(return_value=data), args=data)
 
     # Call tested function
     test_resp = {
-        'session_info': data['session_info'],
-        'fulfillment_response': {
-            'messages': ['You have test on ' + now.strftime("%A, %B %d")],
-            'merge_behavior': 'REPLACE'
+        'sessionInfo': data['sessionInfo'],
+        'fulfillmentResponse': {
+            'messages[]': [{'text': 'You have test on ' + now.isoformat()}],
+            'mergeBehavior': 'REPLACE'
         },
-        'page_info': None,
+        'pageInfo': None,
         'payload': None
     }
-    assert main.backend_activate(req) == test_resp ## replace with good test
+    assert json.loads(main.backend_activate(req)) == test_resp ## replace with good test

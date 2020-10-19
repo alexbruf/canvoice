@@ -18,35 +18,35 @@ def parse_webhook_request(request_json):
     }
     '''
     parsed = {}
-    parsed['detect_intent_response_id'] = request_json.get('detect_intent_response_id', '')
-    intent_info = request_json.get('intent_info', None)
+    parsed['detect_intent_response_id'] = request_json.get('detectIntentResponseId', '')
+    intent_info = request_json.get('intentInfo', None)
     if intent_info:
         parsed['intent'] = {
-            'intent_id': intent_info['last_matched_intent']
+            'intent_id': intent_info['lastMatchedIntent']
         }
 
         parsed['intent']['params'] = {}
-        params = intent_info['parameters']
+        params = intent_info.get('parameters', {})
         for param in params.keys():
-            parsed['intent']['params'][param] = params[param]['resolved_value']
+            parsed['intent']['params'][param] = params[param]['resolvedValue']
 
-    parsed['tag'] = request_json.get('fulfillment_info', {}).get('tag')
+    parsed['tag'] = request_json.get('fulfillmentInfo', {}).get('tag')
     
     
-    session_info = request_json.get('session_info')
+    session_info = request_json.get('sessionInfo')
     if session_info:
         parsed['session'] = {
             'session_id': session_info['session'],
             'params': {}
         }
-        params = session_info['parameters']
+        params = session_info.get('parameters', {})
         for param in params.keys():
             parsed['session']['params'][param] = params[param]
     
     return parsed
 
 def get_api_key():
-    func_name = os.environ.get('FUNCTION_NAME', None)
+    func_name = os.environ.get('CANVAS_API_KEY', None)
     if func_name:
         #production environment
         api_key = os.environ.get('CANVAS_API_KEY', None)
@@ -66,13 +66,16 @@ def generate_webhook_response(messages, request_json):
     messages: string[]
     request_json: json
     '''
+
+    # return messages[0]
     resp = {}
-    resp['page_info'] = request_json.get('page_info', None)
-    resp['session_info'] = request_json.get('session_info', None)
+    resp['pageInfo'] = request_json.get('pageInfo', None)
+    resp['sessionInfo'] = request_json.get('sessionInfo', None)
     resp['payload'] = request_json.get('payload', None)
-    resp['fulfillment_response'] =  {
-        'messages': messages,
-        'merge_behavior': 'REPLACE'
+    # resp['fulfillmentText'] = messages[0]
+    resp['fulfillmentResponse'] =  {
+        'messages[]': list(map(lambda x: {'text': x}, messages)),
+        'mergeBehavior': 'REPLACE'
     }
 
     return resp
