@@ -14,12 +14,14 @@
 
 import sys
 
+from helper import parse_webhook_request, generate_webhook_response, get_api_key
+
+from api import CanvasAPI
+from datetime import datetime
+
 # [START functions_helloworld_http]
 # [START functions_http_content]
 from flask import escape
-
-# [END functions_helloworld_http]
-# [END functions_http_content]
 
 # [START functions_helloworld_get]
 def hello_get(request):
@@ -35,64 +37,23 @@ def hello_get(request):
     return 'Hello World!'    
 # [END functions_helloworld_get]
 
+# [BEGIN processing functions]
 
-def parse_webhook_request(request_json):
-    '''
-    Should return a parsed object:
-    {
-        'detect_intent_response_id': string,
-        'intent': {
-            'intent_id': string,
-            'params': map<string, Value>
-        },
-        'tag': string, # use this to determine action to take
-        'session': {
-            'session_id': string,
-            'params': map<string, Value>
-        }
-    }
-    '''
-    parsed = {}
-    parsed['detect_intent_response_id'] = request_json.get('detect_intent_response_id', '')
-    intent_info = request_json.get('intent_info')
-    if len(intent_info) > 0:
-        parsed['intent'] = {
-            'intent_id': intent_info[0]['last_matched_intent']
-        }
-
-        parsed['intent']['params'] = {}
-        params = intent_info[0]['parameters']
-        for param in params.keys():
-            parsed['intent']['params'][param] = params[param]['resolved_value']
-
-    parsed['tag'] = request_json.get('fulfillment_info', '')
-    
-    
-    session_info = request_json.get('session_info')
-    if session_info:
-        parsed['session'] = {
-            'session_id': session_info['session'],
-            'params': {}
-        }
-        params = session_info['parameters']
-        for param in params.keys():
-            parsed['session']['params'][param] = params[param]
-    
-    return parsed
-
-
-def generate_webhook_response(messages, request_json):
-    resp = {}
-    resp['page_info'] = request_json['page_info']
-    resp['session_info'] = request_json['session_info']
-    resp['payload'] = request_json['payload']
-    resp['fulfillment_response'] =  {
-        'messages': messages,
-        'merge_behavior': 'REPLACE'
-    }
 
 def process_todo(req):
-    return 'Nothing new!'
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+
+    canvas = CanvasAPI(api_key)
+    todos = canvas.get_todo() # next 7 days of todos
+    if len(todos) == 0:
+        return 'You have nothing new due!'
+
+    todo_on = ['{0} on {1}'.format(todo.title, datetime(todo.start_at).strftime("%A, %B %d")) for todo in todos]
+    return 'You have ' + ' and '.join(todo_on)
 
 
 def backend_activate(request):
