@@ -41,3 +41,34 @@ class CanvasAPI:
       return []
     
     return res[start:limit]
+
+
+  def get_course_grades(self,
+                        courses=None):
+    '''
+    Gets the current grade for specified course(s)
+      courses: int[] (default None), course IDs
+    Returns array of grade dicts w/ courseID, name, and grade
+    '''
+    # TODO: Find way to filter classes from this semester (170 is hardcoded for Fall 2020)
+    # Build map from courseID to name
+    courseNameMap = {}
+    user_courses = self.canvas.get_user('self').get_courses()
+    for course in user_courses:
+      if hasattr(course, 'access_restricted_by_date') or course.enrollment_term_id != 170:
+        continue
+      courseNameMap[course.id] = course.name
+
+    enrollments = self.canvas.get_user('self').get_enrollments(enrollment_term_id=170)
+    grades = []
+    for enrollment in enrollments:
+      if courses is not None and enrollment.course_id not in courses:
+        continue
+      gradeObj = {
+        'id': enrollment.course_id,
+        'name': courseNameMap[enrollment.course_id],
+        'grade': enrollment.grades['current_score'],
+      }
+      grades.append(gradeObj)
+
+    return grades
