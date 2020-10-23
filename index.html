@@ -7,11 +7,15 @@
 
     <button type="button" onclick="authorize()">Log in</button>
 
-    <input id="key" type="text" name="text" defaultValue="" placeholder="dialogflow token here" />
-
     <input id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
 
-    <button type="button" onclick="myFunction2()">Submit</button>
+    <button type="button" onclick="myFunction2()">Submit</button> <br>
+
+    <input id="key" type="text" name="text" defaultValue="" placeholder="dialogflow token here" />
+
+    <input id="input_with_key" type="text" name="text" defaultValue="" placeholder="your query here" />
+
+    <button type="button" onclick="myFunction()">Submit</button> <br>
 
     <p> You said: </p>
 
@@ -83,7 +87,7 @@
                     body: JSON.stringify({
                         "queryInput": {
                             "text": {
-                                "text": document.getElementById("input").value
+                                "text": document.getElementById("input_with_key").value
                             },
                             "languageCode": "en"
                         },
