@@ -42,8 +42,12 @@ def process_grades(req):
         print('no api key!')
         raise Exception()
 
+    courses = None
+    if 'courses' in req['intent']['params']:
+        courses = req['intent']['params']['courses']
+
     canvas = CanvasAPI(api_key)
-    grades = canvas.get_course_grades() # next all course grades
+    grades = canvas.get_course_grades(courses) # Specified course grades or all if nothing specified
     if len(grades) == 0:
         return 'You have no course grades right now!'
 
