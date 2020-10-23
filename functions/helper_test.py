@@ -42,13 +42,10 @@ def test_generate_response():
     resp = generate_webhook_response(['test message'], req)
 
     test_resp = {
-        'sessionInfo': req['sessionInfo'],
-        'fulfillmentResponse': {
-            'messages[]': [{'text': 'test message'}],
-            'mergeBehavior': 'REPLACE'
-        },
-        'pageInfo': None,
-        'payload': None
+        'fulfillment_response': {
+            'messages': [{'text': {'text': ['test message']}}],
+            'merge_behavior': 'REPLACE'
+        }
     }
 
     assert resp == test_resp
