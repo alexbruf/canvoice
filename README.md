@@ -6,6 +6,10 @@ gcp project id: canvoice-292621
 gcloud auth login
 gcloud config set project canvoice-292621
 
+Webhook tags:
+todo: assignments list
+grades: get grades
+
 to authorize for dialogflow download the JS client key file and run the following commands:
         gcloud auth activate-service-account --key-file=<keyfile.json>
         gcloud auth print-access-token
