@@ -69,13 +69,15 @@ def generate_webhook_response(messages, request_json):
 
     # return messages[0]
     resp = {}
-    resp['pageInfo'] = request_json.get('pageInfo', None)
-    resp['sessionInfo'] = request_json.get('sessionInfo', None)
-    resp['payload'] = request_json.get('payload', None)
+    # resp['pageInfo'] = request_json.get('pageInfo', None)
+    # resp['sessionInfo'] = request_json.get('sessionInfo', None)
+    # resp['payload'] = request_json.get('payload', None)
     # resp['fulfillmentText'] = messages[0]
-    resp['fulfillmentResponse'] =  {
-        'messages[]': list(map(lambda x: {'text': x}, messages)),
-        'mergeBehavior': 'REPLACE'
+    resp['fulfillment_response'] =  {
+        'messages': [{
+            'text': {'text': messages}
+        }],
+        'merge_behavior': 'REPLACE'
     }
 
     return resp

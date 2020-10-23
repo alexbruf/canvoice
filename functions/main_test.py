@@ -41,12 +41,9 @@ def test_backend_activate_todo(mocked_api):
 
     # Call tested function
     test_resp = {
-        'sessionInfo': data['sessionInfo'],
-        'fulfillmentResponse': {
-            'messages[]': [{'text': 'You have test on ' + now.isoformat()}],
-            'mergeBehavior': 'REPLACE'
-        },
-        'pageInfo': None,
-        'payload': None
+        'fulfillment_response': {
+            'messages': [{'text': {'text:' ['You have test on ' + now.isoformat()]}}],
+            'merge_behavior': 'REPLACE'
+        }
     }
     assert json.loads(main.backend_activate(req)) == test_resp ## replace with good test
