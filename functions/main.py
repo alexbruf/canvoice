@@ -35,6 +35,22 @@ def process_todo(req):
     return 'You have ' + ' and '.join(todo_on)
 
 
+def process_grades(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+
+    canvas = CanvasAPI(api_key)
+    grades = canvas.get_course_grades() # next all course grades
+    if len(grades) == 0:
+        return 'You have no course grades right now!'
+
+    formatted_grades = ['{0}% in {1}'.format(grade['score'], grade['name']) for grade in grades]
+    return 'You have a ' + ' and a '.join(formatted_grades)
+
+
 def backend_activate(request):
     """Responds to any HTTP request.
     Args:
