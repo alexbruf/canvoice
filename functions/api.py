@@ -67,7 +67,7 @@ class CanvasAPI:
       gradeObj = {
         'id': enrollment.course_id,
         'name': courseNameMap[enrollment.course_id],
-        'grade': enrollment.grades['current_score'],
+        'score': enrollment.grades['current_score'],
       }
       grades.append(gradeObj)
 
