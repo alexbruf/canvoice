@@ -20,3 +20,20 @@ Make sure you put your canvas api key in a file called "api_key.json" at the roo
   "canvas_api_key": "<your api key>"
 }
 ```
+
+How a fullfillment_response is supposed to look:
+```
+{
+            'fulfillment_response': {
+                'messages': [
+                       { 
+                           'text': {'text': ['test message 2']}
+                       },
+                    ],
+                    'merge_behavior': 'REPLACE'
+                },
+            'payload': {
+                'test': 'val'
+            }
+        }
+```
