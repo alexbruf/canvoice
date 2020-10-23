@@ -1,0 +1,20 @@
+{
+  "detectIntentResponseId": "test_id",
+  "intentInfo": {
+      "lastMatchedIntent": "test_intent_id",
+      "parameters": {
+        "test_param0": {"resolvedValue": "test_param_value"},
+        "test_param1": {"resolvedValue": 0},
+        "test_param2": {"resolvedValue": false}
+      }
+    },
+  "fulfillmentInfo": {"tag": "grades"},
+  "sessionInfo": {
+      "session": "test_session_id",
+      "parameters": {
+        "test_param0": "test_param_value",
+        "test_param1": 0,
+        "test_param2": false
+      }
+    }
+}

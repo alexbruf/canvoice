@@ -9,7 +9,7 @@ now = datetime.now()
 
 @mock.patch('main.CanvasAPI.get_todo')
 def test_todo_intent(mocked_api):
-    f = open('test_request.json', 'rb')
+    f = open('test_todo_request.json', 'rb')
     if not f:
         raise Exception()
 
@@ -27,7 +27,7 @@ def test_todo_intent(mocked_api):
 @mock.patch('main.CanvasAPI.get_todo')
 def test_backend_activate_todo(mocked_api):
     name = 'test'
-    f = open('test_request.json', 'rb')
+    f = open('test_todo_request.json', 'rb')
     if not f:
         raise Exception()
 
@@ -47,3 +47,22 @@ def test_backend_activate_todo(mocked_api):
         }
     }
     assert json.loads(main.backend_activate(req)) == test_resp ## replace with good test
+
+
+@mock.patch('main.CanvasAPI.get_course_grades')
+def test_grades_intent(mocked_api):
+  f = open('test_grades_request.json', 'rb')
+  if not f:
+    raise Exception()
+
+  req = json.load(f)
+  req['fulfillment_info'] = {'tag': 'grades'}
+
+  # Not sure if i did this correctly
+  mocked_api.return_value = [dict([
+    ('id', 0),
+    ('name', 'test_class'),
+    ('score', 100.0),
+  ])]
+  assert main.process_grades(req) == 'You have a 100.0% in test_class'
+  mocked_api.assert_called_once()
