@@ -47,7 +47,7 @@ def process_grades(req):
     if len(grades) == 0:
         return 'You have no course grades right now!'
 
-    formatted_grades = ['{0}% in {1}'.format(grade['score'], grade['name']) for grade in grades]
+    formatted_grades = ['{0}%% in {1}'.format(grade['score'], grade['name']) for grade in grades]
     return 'You have a ' + ' and a '.join(formatted_grades)
 
 
@@ -71,6 +71,9 @@ def backend_activate(request):
 
     if req['tag'] == 'todo':
         resp = process_todo(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'grades':
+        resp = process_grades(req)
         return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
