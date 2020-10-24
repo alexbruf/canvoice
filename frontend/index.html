@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<head>
+    <title>CanVoice</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+
+<style>
+    .test {
+        margin-left: auto;
+        margin-right: auto;
+        border-style: groove;
+        border-width: 5px;
+        border-radius: 20px;
+        border-spacing: 15px;
+        background-color: lightblue;
+        margin-bottom: 30px;
+    }
+
+    .response {
+        margin-left: auto;
+        margin-right: 50%;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 10px;
+        border-spacing: 15px;
+        padding: 5px;
+        background-color: lightblue;
+    }
+
+    .post {
+        margin-left: auto;
+        margin-right: 50%;
+        border-width: 2px;
+        border-radius: 10px;
+        border-spacing: 15px;
+        background-color: lightgray;
+        border-style: solid;
+        text-align: right;
+        padding: 5px;
+    }
+
+    .input {
+        margin-top: 25px;
+    }
+</style>
+
+<body onload="construct()">
+
+    <a href="dev.html">Devoloper Frontend</a>
+    <h1>CanVoice</h1>
+    <div id="chat">
+
+    </div>
+    <input class="input" size="130" id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
+
+    <button class="input" type="button" onclick="googleRequest()">Submit</button>
+
+</body>
+
+<script src="https://apis.google.com/js/client.js"></script>
+<script>
+    var GoogleAuth;
+    var isAuthorized;
+
+    function construct() {
+        gapi.client.init({
+            'apiKey': 'AIzaSyCeen6LrrgG8PmqlxHnvSL62iK6V0d7zak',
+            'clientId': '551722328649-jbplnqf7jk4480mddeq8qa96i0kn5bat.apps.googleusercontent.com',
+            'scope': 'https://www.googleapis.com/auth/dialogflow',
+            'discoveryDocs': ['https://dialogflow.googleapis.com/$discovery/rest?version=v3beta1']
+        }).then(function () {
+            GoogleAuth = gapi.auth2.getAuthInstance();
+            authorize();
+        });
+    }
+
+    function authorize() {
+        GoogleAuth.signIn();
+        isAuthorized = true;
+    }
+
+    function handler(jsonResp, rawResp) {
+        console.log("in handler");
+        var data = jsonResp;
+        var show = "<div class='response'><strong>Canvoice:</strong>\n"
+        for (let i = 0; i < data.queryResult.responseMessages.length; i++) {
+            for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
+                show = show + data.queryResult.responseMessages[i].text.text[j] + "\n";
+            }
+        }
+        show = show + "</div>"
+        document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
+        console.log(data);
+    }
+
+    function googleRequest() {
+        var show = "<div class='post'><strong>You:</strong>\n";
+        show = show + document.getElementById('input').value;
+        show = show + "</div>";
+        document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
+
+        //this is the POST request
+        url =
+            "https://dialogflow.googleapis.com/v3beta1/projects/canvoice-292621/locations/us/agents/bcb4ddc7-823b-4a73-8eac-37415c09ca17/sessions/0:detectIntent"
+        if (isAuthorized) {
+            var request = gapi.client.request({
+                'method': 'POST',
+                'path': url,
+                'body': JSON.stringify({
+                    "queryInput": {
+                        "text": {
+                            "text": document.getElementById("input").value
+                        },
+                        "languageCode": "en"
+                    },
+                    "queryParams": {
+                        "timeZone": "America/New_York"
+                    }
+                }),
+            });
+            request.execute(handler);
+        } else {
+            authorize();
+        }
+
+        document.getElementById("input").value = "";
+    }
+</script>
