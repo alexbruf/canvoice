@@ -9,13 +9,13 @@
 
     <input id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
 
-    <button type="button" onclick="myFunction2()">Submit</button> <br>
+    <button type="button" onclick="googleRequest()">Submit</button> <br>
 
     <input id="key" type="text" name="text" defaultValue="" placeholder="dialogflow token here" />
 
     <input id="input_with_key" type="text" name="text" defaultValue="" placeholder="your query here" />
 
-    <button type="button" onclick="myFunction()">Submit</button> <br>
+    <button type="button" onclick="devRequest()">Submit</button> <br>
 
     <p> You said: </p>
 
@@ -38,7 +38,7 @@
 
         function construct() {
             gapi.client.init({
-                'apiKey': 'NothingToSeeHere',
+                'apiKey': 'AIzaSyCeen6LrrgG8PmqlxHnvSL62iK6V0d7zak',
                 'clientId': '551722328649-jbplnqf7jk4480mddeq8qa96i0kn5bat.apps.googleusercontent.com',
                 'scope': 'https://www.googleapis.com/auth/dialogflow',
                 'discoveryDocs': ['https://dialogflow.googleapis.com/$discovery/rest?version=v3']
@@ -67,7 +67,7 @@
             GoogleAuth.isSignedIn.listen(updateSigninStatus);
         }
 
-        function myFunction() {
+        function devRequest() {
             //this is a debugging 
             document.getElementById("demo").innerHTML = document.getElementById("input").value;
 
@@ -115,7 +115,7 @@
             console.log(data);
         }
 
-        function myFunction2() {
+        function googleRequest() {
             //this is a debugging 
             document.getElementById("demo").innerHTML = document.getElementById("input").value;
 
