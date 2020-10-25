@@ -9,7 +9,7 @@ now = datetime.now()
 
 @mock.patch('main.CanvasAPI.get_todo')
 def test_todo_intent(mocked_api):
-    f = open('test_todo_request.json', 'rb')
+    f = open('test_request.json', 'rb')
     if not f:
         raise Exception()
 
@@ -27,7 +27,7 @@ def test_todo_intent(mocked_api):
 @mock.patch('main.CanvasAPI.get_todo')
 def test_backend_activate_todo(mocked_api):
     name = 'test'
-    f = open('test_todo_request.json', 'rb')
+    f = open('test_request.json', 'rb')
     if not f:
         raise Exception()
 
@@ -51,7 +51,7 @@ def test_backend_activate_todo(mocked_api):
 
 @mock.patch('main.CanvasAPI.get_course_grades')
 def test_grades_intent(mocked_api):
-  f = open('test_grades_request.json', 'rb')
+  f = open('test_request.json', 'rb')
   if not f:
     raise Exception()
 
