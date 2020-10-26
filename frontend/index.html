@@ -25,7 +25,7 @@
         border-radius: 10px;
         border-spacing: 15px;
         padding: 5px;
-        background-color: lightblue;
+        background-color: lightpink;
     }
 
     .post {
@@ -83,7 +83,7 @@
     function handler(jsonResp, rawResp) {
         console.log("in handler");
         var data = jsonResp;
-        var show = "<div class='response'><strong>Canvoice:</strong>\n"
+        var show = "<div class='response'><strong>CanVoice:</strong><br>"
         for (let i = 0; i < data.queryResult.responseMessages.length; i++) {
             for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
                 show = show + data.queryResult.responseMessages[i].text.text[j] + "\n";
@@ -95,7 +95,7 @@
     }
 
     function googleRequest() {
-        var show = "<div class='post'><strong>You:</strong>\n";
+        var show = "<div class='post'><strong>You:</strong><br>";
         show = show + document.getElementById('input').value;
         show = show + "</div>";
         document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
