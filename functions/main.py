@@ -49,11 +49,47 @@ def process_grades(req):
 
     canvas = CanvasAPI(api_key)
     grades = canvas.get_course_grades(courses) # Specified course grades or all if nothing specified
-    if len(grades) == 0:
-        return 'You have no course grades right now!'
+    numGrades = len(grades)
+    if numGrades == 0:
+        print('You have no course grades right now!')
 
-    formatted_grades = ['{0}% in {1}'.format(grade['score'], grade['name']) for grade in grades]
-    return 'You have a ' + ' and a '.join(formatted_grades)
+    # Format response string based on
+    formatted_grades = []
+    none_grades = []
+    for grade in grades:
+        if grade['score'] == None:
+            none_grades.append(grade['name'])
+        else:
+            formatted_grades.append('{0}% in {1}'.format(grade['score'], grade['name']))
+    numFormatted = len(formatted_grades)
+    numNone = len(none_grades)
+    assert numGrades == (numFormatted + numNone)
+
+    response = ''
+    # Output well-formed response depending on number of valid and 'None' grades received
+    if numFormatted == 0:
+        response += 'I couldn\'t find any grade for ' + none_grades[0]
+        if numNone > 1:
+            for none_grade in none_grades[1:(numNone-1)]:
+                response += ', ' + none_grade
+            response += ', or ' + none_grades[numNone-1]
+        response += '.'
+    else:
+        response += 'You have a ' + formatted_grades[0]
+        if numFormatted > 1:
+            for formatted_grade in formatted_grades[1:(numFormatted-1)]:
+                response += ', a ' + formatted_grade
+            response += ', and a ' + formatted_grades[numFormatted-1]
+        response += '. '
+        if numNone > 0:
+            response += 'I couldn\'t find any grade for ' + none_grades[0]
+            if numNone > 1:
+                for none_grade in none_grades[1:(numNone-1)]:
+                    response += ', ' + none_grade
+                response += ', or ' + none_grades[numNone-1]
+            response += '.'
+
+    return response
 
 
 def backend_activate(request):
