@@ -1,4 +1,4 @@
-.response {
+.test {
     margin-left: auto;
     margin-right: auto;
     border-style: groove;
@@ -9,13 +9,29 @@
     margin-bottom: 30px;
 }
 
+.response {
+    margin-left: auto;
+    margin-right: 50%;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    border-spacing: 15px;
+    padding: 5px;
+    background-color: lightpink;
+}
+
 .post {
     margin-left: auto;
-    margin-right: auto;
-    border-style: groove;
-    border-width: 5px;
-    border-radius: 20px;
+    margin-right: 50%;
+    border-width: 2px;
+    border-radius: 10px;
     border-spacing: 15px;
     background-color: lightgray;
-    margin-bottom: 30px;
+    border-style: solid;
+    text-align: right;
+    padding: 5px;
+}
+
+.input {
+    margin-top: 25px;
 }
