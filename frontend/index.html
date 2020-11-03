@@ -64,29 +64,42 @@
         isAuthorized = true;
     }
 
+    function resumeInfinity() {
+        window.speechSynthesis.resume();
+        timeoutResumeInfinity = setTimeout(resumeInfinity, 1000);
+    }
+
+    tts.onstart = function(event) {
+        resumeInfinity();
+    };
+
+    tts.onend = function(event) {
+        clearTimeout(timeoutResumeInfinity);
+    };
+
     function toSpeech(text) {
-        var toSpeak = new SpeechSynthesisUtterance(text);
-        voices = tts.getVoices()
-        // Google UK English Female
-        toSpeak.voice = voices[71];
-        tts.speak(toSpeak);
+        var utterance = new SpeechSynthesisUtterance(text);
+        voices = tts.getVoices();
+        // Bug with non-native languages so using weird one...
+        utterance.voice = voiceArr[0];
+        tts.speak(utterance)
     }
 
     function handler(jsonResp, rawResp) {
         console.log("in handler");
         var data = jsonResp;
         var show = "<div class='response'><strong>CanVoice:</strong><br>"
-        var t = ""
+        var text = ""
         for (let i = 0; i < data.queryResult.responseMessages.length; i++) {
             for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
-                t = t + data.queryResult.responseMessages[i].text.text[j] + "\n";
+                text = text + data.queryResult.responseMessages[i].text.text[j] + "\n";
                 show = show + data.queryResult.responseMessages[i].text.text[j] + "\n";
             }
         }
         show = show + "</div>"
         document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
-        console.log(t)
-        toSpeech(t)
+        console.log(text)
+        toSpeech(text)
         console.log(data);
     }
 
@@ -95,8 +108,6 @@
         // show = show + document.getElementById('input').value;
         var input = document.getElementById("final_span");
         var text = input.innerHTML;
-        // console.log("input: \n" + show)
-        // console.log(input)
         console.log("TEXT: " + text)
         show = show + text
         show = show + "</div>";
@@ -126,7 +137,7 @@
         } else {
             authorize();
         }
-        // document.getElementById("input").value = "";
+        document.getElementById("final_span").value = "";
     }
 </script>
 <script src="js/languages.js"></script>
