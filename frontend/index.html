@@ -1,22 +1,45 @@
 <!DOCTYPE html>
 
 <head>
+    <meta charset='utf-8'>
     <title>CanVoice</title>
     <link rel="stylesheet" href="static/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/web-speech.css">
 </head>
 
 <body onload="construct()">
-
     <a href="dev.html">Devoloper Frontend</a>
-    <h1>CanVoice</h1>
-    <div id="chat">
-
-    </div>
-    <input class="input" size="130" id="input" type="text" name="text" defaultValue="" placeholder="your query here" />
-
-    <button class="input" type="button" onclick="googleRequest()">Submit</button>
-
+    <div class="container mt-3">
+        <h1 class="text-center">CanVoice</h1>
+        <div id="info"></div>
+        <div class="float-right">
+          <button id="start_button">
+            <img id="start_img" src="images/mic.gif" alt="Start"></button>
+        </div>
+        <div id="results">
+          <span style="color:gray" contenteditable="true" id="final_span" class="final">Editable text</span>
+          <span id="interim_span" class="interim"></span>
+          <p>
+        </div>
+        <div class="row col-12 p-0 m-0">
+          <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
+              <select id="select_language"></select>
+              <select id="select_dialect"></select>
+              <button class="btn btn-secondary" type="button" onclick="googleRequest()">Submit</button>
+          </div>
+          <div class="col-12 col-md-4 col-lg-6 mt-3 mt-md-0 p-0 m-1">
+          </div>
+        </div>
+    <div id="chat"></div>    
 </body>
+
+<script type="text/javascript">
+    function startSearch(event) {
+      event.target.form.submit();
+    }
+</script>
 
 <script src="https://apis.google.com/js/client.js"></script>
 <script>
@@ -56,8 +79,15 @@
 
     function googleRequest() {
         var show = "<div class='post'><strong>You:</strong><br>";
-        show = show + document.getElementById('input').value;
+        // show = show + document.getElementById('input').value;
+        var input = document.getElementById("final_span");
+        var text = input.innerHTML;
+        // console.log("input: \n" + show)
+        // console.log(input)
+        console.log(text)
+        show = show + text
         show = show + "</div>";
+        console.log("SHOW: \n" + show)
         document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
 
         //this is the POST request
@@ -70,7 +100,7 @@
                 'body': JSON.stringify({
                     "queryInput": {
                         "text": {
-                            "text": document.getElementById("input").value
+                            "text": text
                         },
                         "languageCode": "en"
                     },
@@ -87,3 +117,5 @@
         document.getElementById("input").value = "";
     }
 </script>
+<script src="js/languages.js"></script>
+<script src="js/web-speech-api.js"></script>
