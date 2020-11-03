@@ -45,6 +45,7 @@
 <script>
     var GoogleAuth;
     var isAuthorized;
+    var tts = window.speechSynthesis
 
     function construct() {
         gapi.client.init({
@@ -63,17 +64,29 @@
         isAuthorized = true;
     }
 
+    function toSpeech(text) {
+        var toSpeak = new SpeechSynthesisUtterance(text);
+        voices = tts.getVoices()
+        // Google UK English Female
+        toSpeak.voice = voices[71];
+        tts.speak(toSpeak);
+    }
+
     function handler(jsonResp, rawResp) {
         console.log("in handler");
         var data = jsonResp;
         var show = "<div class='response'><strong>CanVoice:</strong><br>"
+        var t = ""
         for (let i = 0; i < data.queryResult.responseMessages.length; i++) {
             for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
+                t = t + data.queryResult.responseMessages[i].text.text[j] + "\n";
                 show = show + data.queryResult.responseMessages[i].text.text[j] + "\n";
             }
         }
         show = show + "</div>"
         document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
+        console.log(t)
+        toSpeech(t)
         console.log(data);
     }
 
@@ -84,10 +97,10 @@
         var text = input.innerHTML;
         // console.log("input: \n" + show)
         // console.log(input)
-        console.log(text)
+        console.log("TEXT: " + text)
         show = show + text
         show = show + "</div>";
-        console.log("SHOW: \n" + show)
+        console.log("SHOW: " + show)
         document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + show;
 
         //this is the POST request
@@ -113,8 +126,7 @@
         } else {
             authorize();
         }
-
-        document.getElementById("input").value = "";
+        // document.getElementById("input").value = "";
     }
 </script>
 <script src="js/languages.js"></script>
