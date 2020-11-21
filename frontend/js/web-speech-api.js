@@ -51,7 +51,7 @@ $( document ).ready(function() {
     showInfo('start');  
     start_button.style.display = 'inline-block';
     recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
+    recognition.continuous = false;
     recognition.interimResults = true;
 
     recognition.onstart = function() {
