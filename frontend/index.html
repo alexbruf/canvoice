@@ -20,7 +20,7 @@
             <img id="start_img" src="images/mic.gif" alt="Start"></button>
         </div>
         <div id="results">
-          <span style="color:gray" contenteditable="true" id="final_span" class="badge" aria-placeholder="Editable text" onsubmit="googleRequest()"></span>
+          <span style="color:gray" contenteditable="true" id="final_span" class="badge" aria-placeholder="Editable text"></span>
           <span id="interim_span" class="interim"></span>
         </div>
         <div class="row col-12 p-0 m-0">
@@ -139,7 +139,7 @@
         } else {
             authorize();
         }
-        document.getElementById("final_span").value = "";
+        document.getElementById("final_span").innerHTML = "";
     }
 </script>
 <script src="js/languages.js"></script>
