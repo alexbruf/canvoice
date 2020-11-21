@@ -95,7 +95,7 @@ $( document ).ready(function() {
       if (window.getSelection) {
         window.getSelection().removeAllRanges();
         var range = document.createRange();
-        range.selectNode(document.getElementById('final_span'));
+        range.selectNode(document.getElementBId('final_span'));
         window.getSelection().addRange(range);
       }
     };
