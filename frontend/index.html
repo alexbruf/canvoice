@@ -2,6 +2,7 @@
 
 <head>
     <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CanVoice</title>
     <link rel="stylesheet" href="static/style.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -19,20 +20,21 @@
             <img id="start_img" src="images/mic.gif" alt="Start"></button>
         </div>
         <div id="results">
-          <span style="color:gray" contenteditable="true" id="final_span" class="final">Editable text</span>
+          <span style="color:gray" contenteditable="true" id="final_span" class="badge" aria-placeholder="Editable text" onsubmit="googleRequest()"></span>
           <span id="interim_span" class="interim"></span>
-          <p>
         </div>
         <div class="row col-12 p-0 m-0">
           <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
-              <select id="select_language"></select>
-              <select id="select_dialect"></select>
               <button class="btn btn-secondary" type="button" onclick="googleRequest()">Submit</button>
           </div>
           <div class="col-12 col-md-4 col-lg-6 mt-3 mt-md-0 p-0 m-1">
           </div>
         </div>
-    <div id="chat"></div>    
+    <div id="chat" style="margin-bottom: 15px;"></div>
+    <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
+        <select id="select_language"></select>
+        <select id="select_dialect"></select>
+    </div>    
 </body>
 
 <script type="text/javascript">
