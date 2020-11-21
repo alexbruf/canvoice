@@ -16,30 +16,31 @@
         <h1 class="text-center">CanVoice</h1>
         <div id="info"></div>
         <div class="float-right">
-          <button id="start_button">
-            <img id="start_img" src="images/mic.gif" alt="Start"></button>
+            <button id="start_button">
+                <img id="start_img" src="images/mic.gif" alt="Start"></button>
         </div>
         <div id="results">
-          <span style="color:gray" contenteditable="true" id="final_span" class="badge" aria-placeholder="Editable text"></span>
-          <span id="interim_span" class="interim"></span>
+            <span style="color:gray" contenteditable="true" id="final_span" class="badge"
+                aria-placeholder="Editable text"></span>
+            <span id="interim_span" class="interim"></span>
         </div>
         <div class="row col-12 p-0 m-0">
-          <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
-              <button class="btn btn-secondary" type="button" onclick="googleRequest()">Submit</button>
-          </div>
-          <div class="col-12 col-md-4 col-lg-6 mt-3 mt-md-0 p-0 m-1">
-          </div>
+            <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
+                <button class="btn btn-secondary" type="button" onclick="googleRequest()">Submit</button>
+            </div>
+            <div class="col-12 col-md-4 col-lg-6 mt-3 mt-md-0 p-0 m-1">
+            </div>
         </div>
-    <div id="chat" style="margin-bottom: 15px;"></div>
-    <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
-        <select id="select_language"></select>
-        <select id="select_dialect"></select>
-    </div>    
+        <div id="chat" style="margin-bottom: 15px;"></div>
+        <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
+            <select id="select_language"></select>
+            <select id="select_dialect"></select>
+        </div>
 </body>
 
 <script type="text/javascript">
     function startSearch(event) {
-      event.target.form.submit();
+        event.target.form.submit();
     }
 </script>
 
@@ -71,11 +72,11 @@
         timeoutResumeInfinity = setTimeout(resumeInfinity, 1000);
     }
 
-    tts.onstart = function(event) {
+    tts.onstart = function (event) {
         resumeInfinity();
     };
 
-    tts.onend = function(event) {
+    tts.onend = function (event) {
         clearTimeout(timeoutResumeInfinity);
     };
 
