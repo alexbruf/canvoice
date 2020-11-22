@@ -15,7 +15,7 @@
 import sys
 from helper import parse_webhook_request, generate_webhook_response, get_api_key
 from api import CanvasAPI
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import escape, jsonify
 import json
 
@@ -26,13 +26,35 @@ def process_todo(req):
         print('no api key!')
         raise Exception()
 
-    canvas = CanvasAPI(api_key)
-    todos = canvas.get_todo() # next 7 days of todos
-    if len(todos) == 0:
-        return 'You have nothing new due!'
+    course = None
+    if 'class_name' in req['intent']['params']:
+        course = req['intent']['params']['class_name']
 
-    todo_on = ['{0} on {1}'.format(todo.title, todo.start_at) for todo in todos]
-    return 'You have ' + ' and '.join(todo_on)
+    canvas = CanvasAPI(api_key)
+    todos = canvas.get_todo(course=course) # next 7 days of todos
+    if len(todos) == 0:
+        return 'You have nothing due in the next week!'
+
+    todo_on = []
+    for todo in todos:
+        formattedDate = datetime.strptime(todo.start_at, '%Y-%m-%dT%H:%M:%SZ') - timedelta(hours=5)
+        courseName = todo.context_name.split()[0] + ' ' + todo.context_name.split()[1]
+        todo_on.append('{0} ({1}) on {2}'.format(
+            todo.title,
+            courseName,
+            formattedDate.strftime('%m/%d %I:%M%p'),
+        ))
+
+    if len(todo_on) == 1:
+        return 'You have ' + todo_on[0]
+    elif len(todo_on) == 2:
+        return 'You have ' + ' and '.join(todo_on)
+    else:
+        response = 'You have ' + todo_on[0]
+        for formatted_todo in todo_on[1:-1]:
+            response += ', ' + formatted_todo
+        response += ', and ' + todo_on[-1]
+        return response
 
 
 def process_grades(req):
@@ -42,13 +64,12 @@ def process_grades(req):
         print('no api key!')
         raise Exception()
 
-    courses = None
-    # TODO: Implement mapper from course name/code to courseID
-    if 'courses' in req['intentInfo']['parameters']:
-        courses = req['intentInfo']['parameters']['courses']
+    course = None
+    if 'class_name' in req['intent']['params']:
+        course = req['intent']['params']['class_name']
 
     canvas = CanvasAPI(api_key)
-    grades = canvas.get_course_grades(courses) # Specified course grades or all if nothing specified
+    grades = canvas.get_course_grades(course) # Specified course grades or all if nothing specified
     numGrades = len(grades)
     if numGrades == 0:
         print('You have no course grades right now!')
@@ -60,7 +81,7 @@ def process_grades(req):
         if grade['score'] == None:
             none_grades.append(grade['name'])
         else:
-            formatted_grades.append('{0}% in {1}'.format(grade['score'], grade['name']))
+            formatted_grades.append('{0}% in {1}'.format(grade['score'], grade['code']))
     numFormatted = len(formatted_grades)
     numNone = len(none_grades)
     assert numGrades == (numFormatted + numNone)
@@ -119,4 +140,3 @@ def backend_activate(request):
 
     # no intent found
     raise Exception()
-
