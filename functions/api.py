@@ -22,7 +22,8 @@ class CanvasAPI:
               start_date=datetime.now(),
               end_date=datetime.now() + timedelta(days=7),
               start=0,
-              limit=10):
+              limit=10,
+              course=None):
     '''
     gets the todo items from the start_date to the end_date
     start_date: datetime (default now)
@@ -33,7 +34,21 @@ class CanvasAPI:
     active_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
     convert_to_context_code = lambda course: 'course_' + str(course.id)
 
-    context_codes = [convert_to_context_code(course) for course in list(active_courses)]
+    # If course was specified, find the closest match
+    courseCode = None
+    if course:
+      activeCourseNames = []
+      for nextCourse in list(active_courses):
+        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+          continue
+        activeCourseNames.append(nextCourse.course_code)
+      courseCode = process.extractOne(course, activeCourseNames)[0]
+
+    context_codes = []
+    for nextCourse in list(active_courses):
+      if course and nextCourse.course_code != courseCode:
+        continue
+      context_codes.append(convert_to_context_code(nextCourse))
     res = list(self.canvas.get_user('self')
                 .get_calendar_events_for_user(context_codes=context_codes,
                                                   start_date=start_date,
@@ -46,28 +61,34 @@ class CanvasAPI:
 
 
   def get_course_grades(self,
-                        courses=None):
+                        course=None):
     '''
     Gets the current grade for specified course(s)
-      courses: int[] (default None), course IDs
+      course: str (default None), course code
     Returns array of grade dicts w/ courseID, name, and grade
     '''
-    # TODO: Find way to filter classes from this semester (170 is hardcoded for Fall 2020)
     # Build map from courseID to name
     courseNameMap = {}
-    user_courses = self.canvas.get_user('self').get_courses()
-    for course in user_courses:
-      if hasattr(course, 'access_restricted_by_date') or course.enrollment_term_id != 170:
+    courseCodeMap = {}
+    user_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    for nextCourse in user_courses:
+      if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
         continue
-      courseNameMap[course.id] = course.name
+      courseNameMap[nextCourse.id] = nextCourse.name
+      courseCodeMap[nextCourse.id] = nextCourse.course_code
+
+    # If course was specified, find the closest match
+    courseCode = None
+    if course:
+      courseCode = process.extractOne(course, [*courseCodeMap.values()])[0]
 
     enrollments = self.canvas.get_user('self').get_enrollments(enrollment_term_id=170)
     grades = []
     for enrollment in enrollments:
-      if courses is not None and enrollment.course_id not in courses:
+      if course and courseCodeMap[enrollment.course_id] != courseCode:
         continue
       gradeObj = {
-        'id': enrollment.course_id,
+        'code': courseCodeMap[enrollment.course_id],
         'name': courseNameMap[enrollment.course_id],
         'score': enrollment.grades['current_score'],
       }
