@@ -96,7 +96,7 @@
         for (let i = 0; i < data.queryResult.responseMessages.length; i++) {
             for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
                 text = text + data.queryResult.responseMessages[i].text.text[j] + "\n";
-                show = show + data.queryResult.responseMessages[i].text.text[j] + "\n";
+                show = show + data.queryResult.responseMessages[i].text.text[j] + "<br>";
             }
         }
         show = show + "</div>"
