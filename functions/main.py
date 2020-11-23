@@ -91,6 +91,30 @@ def process_grades(req):
 
     return response
 
+def process_files(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+
+    canvas = CanvasAPI(api_key)
+    file_name = req["intent"]['params']['file_name']
+    class_name = req["intent"]['params']['class_name']
+
+    # Get 3 closest matching files from closest matching course
+    close_files, course_id = canvas.get_closest_files(file_name, class_name)
+    hold_files = []
+    if close_files == "":
+        return "The class specified does not have any files.", hold_files, course_id
+    # Generate response
+    response = ''
+    for i, file in enumerate(close_files):
+        response += str(i + 1) + ') ' + str(file) + '\n'
+        hold_files.append(file.id)
+
+    return response, hold_files, course_id
+
 
 def backend_activate(request):
     """Responds to any HTTP request.
@@ -116,7 +140,11 @@ def backend_activate(request):
     elif req['tag'] == 'grades':
         resp = process_grades(req)
         return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'files':
+        resp, hold_files, course_id = process_files(req)
+        request_json['sessionInfo']['parameters']['file_codes'] = hold_files
+        request_json['sessionInfo']['parameters']['course_id'] = course_id
+        return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
     raise Exception()
-

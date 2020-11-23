@@ -3,6 +3,7 @@ from unittest import TestCase, mock
 import main
 import json
 from canvasapi.calendar_event import CalendarEvent
+from canvasapi.file import File
 from datetime import datetime
 
 now = datetime.now()
@@ -66,3 +67,23 @@ def test_grades_intent(mocked_api):
   ])]
   assert main.process_grades(req) == 'You have a 100.0% in test_class'
   mocked_api.assert_called_once()
+
+
+@mock.patch('main.CanvasAPI.get_closest_files')
+def test_files_intent(mocked_api):
+    f = open('test_request.json', 'rb')
+    if not f:
+        raise Exception()
+
+    req = json.load(f)
+    req['fulfillment_info'] = {'tag': 'files'}
+
+    mocked_api.return_value = [File(None, {
+                'filename': 'test.txt'
+            }),
+            File(None, {
+                'filename': 'test2.txt'
+            })]
+
+    assert main.process_files(req) == 'tt'
+    mocked_api.assert_called_once()
