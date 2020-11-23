@@ -154,9 +154,9 @@ def process_announcements(req):
     if len(announcements) == 0:
         return 'There are no announcements from your courses!'
 
-    response = 'Here are the most recent course announcements: <br/>'
+    response = 'Here are the most recent course announcements: \n'
     for i, announcement in enumerate(announcements):
-        response += str(i + 1) + ') ' + str(announcement.title) + '<br/>'
+        response += str(i + 1) + ') ' + str(announcement.title) + '\n'
 
     return response
 
