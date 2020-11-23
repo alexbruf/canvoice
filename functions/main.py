@@ -72,7 +72,7 @@ def process_grades(req):
     grades = canvas.get_course_grades(course) # Specified course grades or all if nothing specified
     numGrades = len(grades)
     if numGrades == 0:
-        print('You have no course grades right now!')
+        return 'You have no course grades right now!'
 
     # Format response string based on
     formatted_grades = []
@@ -112,6 +112,7 @@ def process_grades(req):
 
     return response
 
+
 def process_files(req):
     try:
         api_key = get_api_key()
@@ -135,6 +136,29 @@ def process_files(req):
         hold_files.append(file.id)
 
     return response, hold_files, course_id
+
+
+def process_announcements(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+
+    course = None
+    if 'class_name' in req['intent']['params']:
+        course = req['intent']['params']['class_name']
+
+    canvas = CanvasAPI(api_key)
+    announcements = canvas.get_filtered_announcements(course=course) # Specified course or all if nothing specified
+    if len(announcements) == 0:
+        return 'There are no announcements from your courses!'
+
+    response = 'Here are the most recent course announcements: <br/>'
+    for i, announcement in enumerate(announcements):
+        response += str(i + 1) + ') ' + str(announcement.title) + '<br/>'
+
+    return response
 
 
 def backend_activate(request):
@@ -166,6 +190,11 @@ def backend_activate(request):
         request_json['sessionInfo']['parameters']['file_codes'] = hold_files
         request_json['sessionInfo']['parameters']['course_id'] = course_id
         return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'announcements':
+        resp = process_announcements(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
     raise Exception()
+
+

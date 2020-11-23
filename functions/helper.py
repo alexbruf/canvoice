@@ -1,6 +1,7 @@
 import json
 import os
 
+
 def parse_webhook_request(request_json):
     '''
     Should return a parsed object:
@@ -45,6 +46,7 @@ def parse_webhook_request(request_json):
     
     return parsed
 
+
 def get_api_key():
     func_name = os.environ.get('CANVAS_API_KEY', None)
     if func_name:
@@ -60,6 +62,7 @@ def get_api_key():
         return j['canvas_api_key']
 
     raise Exception()
+
 
 def generate_webhook_response(messages, request_json):
     '''
