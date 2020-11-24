@@ -6,6 +6,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import smtplib
 
+
 def parse_webhook_request(request_json):
     '''
     Should return a parsed object:
@@ -49,6 +50,7 @@ def parse_webhook_request(request_json):
             parsed['session']['params'][param] = params[param]
     
     return parsed
+
 
 def get_api_key():
     func_name = os.environ.get('CANVAS_API_KEY', None)
