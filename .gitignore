@@ -134,3 +134,4 @@ dmypy.json
 .pyre/
 
 api_key.json
+app_pw.txt

@@ -109,7 +109,7 @@ class CanvasAPI:
     courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
     class_scores = []
     for c in courses:
-      score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code.lower()))
+      score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
       class_scores.append(score)
 
     # Returns the index of *one of* of the maximum values, but I guess we have no way to break ties
@@ -135,8 +135,28 @@ class CanvasAPI:
       class_files.pop(max_idx)
 
     return best_files, course.id
-
   
+  def fetch_file_to_send(self,
+                         course_id,
+                         file_id):
+    '''
+    Temporarily downloads file with id file_id and fetches user's email 
+      file_id: string, id of desired file
+      course_id: string, id of relevant course
+    Returns user's email and file's name 
+    ''' 
+    user = self.canvas.get_user('self')
+    course = self.canvas.get_course(course_id)
+    file = course.get_file(file_id)
+    file.download(str(file))
+
+    profile = user.get_profile()
+    url = file.url
+    download_idx = url.find("download")
+    url_filtered = url[:download_idx]
+
+    # Returns user's primary email and the file name 
+    return profile["primary_email"], str(file), url_filtered #login.unique_id + "@umich.edu"
 
   
 
