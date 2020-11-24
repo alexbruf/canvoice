@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import sys
-from helper import parse_webhook_request, generate_webhook_response, get_api_key
+from helper import parse_webhook_request, generate_webhook_response, get_api_key, send_email
 from api import CanvasAPI
 from datetime import datetime, timedelta
 from flask import escape, jsonify
@@ -129,13 +129,38 @@ def process_files(req):
     if close_files == "":
         return "The class specified does not have any files.", hold_files, course_id
     # Generate response
-    response = ''
+    response = "Please select the file you were looking for by saying its number, or say \"none\".\n"
     for i, file in enumerate(close_files):
         response += str(i + 1) + ') ' + str(file) + '\n'
         hold_files.append(file.id)
 
     return response, hold_files, course_id
 
+def send_file(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+
+    canvas = CanvasAPI(api_key)
+    # Retrieve stored information from last turn 
+    held_files = req['session']['params']['file_codes']
+    num_selected = int(req['session']['params']['file_num'])
+    if num_selected <= 0 or num_selected >= 4:
+        return "Please select a file number between 1 and 3"
+
+    file_id = held_files[num_selected - 1]
+    course_id = req['session']['params']['course_id']
+
+    # Temporarily downloads target file and gets user's email for sending file
+    receiver_address, file_name, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
+    if not send_email(file_name, receiver_address):
+        return "Unable to send " + file_name + " to your email."
+
+    response = "View your file with this link: " + canvas_url + "\n"
+    response += str(file_name) + " has also been sent to the email associated with your Canvas account."
+    return response
 
 def backend_activate(request):
     """Responds to any HTTP request.
@@ -165,6 +190,9 @@ def backend_activate(request):
         resp, hold_files, course_id = process_files(req)
         request_json['sessionInfo']['parameters']['file_codes'] = hold_files
         request_json['sessionInfo']['parameters']['course_id'] = course_id
+        return json.dumps(generate_webhook_response([resp], request_json, changeSessionParams=True))
+    elif req['tag'] == 'send_file':
+        resp = send_file(req)
         return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
