@@ -116,6 +116,8 @@ def send_email(receiver_address, canvas_url):
         session.sendmail(sender_address, receiver_address, text)
         session.quit()
 
+        
+
         return True
     except:
         return False
