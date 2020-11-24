@@ -155,12 +155,12 @@ def send_file(req):
     course_id = req['session']['params']['course_id']
 
     # Temporarily downloads target file and gets user's email for sending file
-    receiver_address, file_name, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
-    if not send_email(file_name, receiver_address):
-        return "Unable to send " + file_name + " to your email."
+    receiver_address, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
+    if not send_email(receiver_address, canvas_url):
+        return "View your file with this link: " + canvas_url + "\nWe were unable to send the link to your email."
 
     response = "View your file with this link: " + canvas_url + "\n"
-    response += str(file_name) + " has also been sent to the email associated with your Canvas account."
+    response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
 
 def process_announcements(req):
@@ -225,4 +225,4 @@ def backend_activate(request):
     # no intent found
     raise Exception()
 
-
+    

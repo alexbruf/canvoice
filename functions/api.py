@@ -149,7 +149,6 @@ class CanvasAPI:
     user = self.canvas.get_user('self')
     course = self.canvas.get_course(course_id)
     file = course.get_file(file_id)
-    file.download(str(file))
 
     profile = user.get_profile()
     url = file.url
@@ -157,7 +156,7 @@ class CanvasAPI:
     url_filtered = url[:download_idx]
 
     # Returns user's primary email and the file name 
-    return profile["primary_email"], str(file), url_filtered #login.unique_id + "@umich.edu"
+    return profile["primary_email"], url_filtered 
 
   def get_filtered_announcements(self,
                         start_date=datetime.now() - timedelta(days=7),
