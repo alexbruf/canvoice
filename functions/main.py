@@ -157,7 +157,7 @@ def send_file(req):
     # Temporarily downloads target file and gets user's email for sending file
     receiver_address, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
     if not send_email(receiver_address, canvas_url):
-        return "View your file with this link: " + canvas_url + "\nWe were unable to send the link to your email."
+        return "View and download your file with this link: " + canvas_url
 
     response = "View your file with this link: " + canvas_url + "\n"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
