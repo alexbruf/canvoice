@@ -90,10 +90,9 @@ def generate_webhook_response(messages, request_json, changeSessionParams=False)
 
     return resp
 
-def send_email(file_name, receiver_address):
+def send_email(receiver_address, canvas_url):
     try:
-        mail_content = '''Hello, your file should be attached to this email. Thanks for using CanVoice!
-        '''
+        mail_content = "Hello, we've provided a link to your specified file below. Thanks for using CanVoice!\n\n" + canvas_url
         #The mail addresses and password 
         sender_address = 'canvoiceemail@gmail.com'
         sender_pass = ""
@@ -109,17 +108,6 @@ def send_email(file_name, receiver_address):
         #The subject line
         #The body and the attachments for the mail
         message.attach(MIMEText(mail_content, 'plain'))
-        attach_file_name = file_name
-        attach_file = open(attach_file_name, 'rb') # Open the file as binary mode
-        payload = MIMEBase('application', 'octate-stream')
-        name, ext = os.path.splitext(attach_file_name)
-        if ext == ".pdf":
-            payload = MIMEBase('application', 'pdf')
-        payload.set_payload((attach_file).read())
-        encoders.encode_base64(payload) #encode the attachment
-        #add payload header with filename
-        payload.add_header('Content-Decomposition', 'attachment', filename=attach_file_name)
-        message.attach(payload)
         #Create SMTP session for sending the mail
         session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
         session.starttls() #enable security
@@ -128,8 +116,6 @@ def send_email(file_name, receiver_address):
         session.sendmail(sender_address, receiver_address, text)
         session.quit()
 
-        os.remove(file_name)
         return True
     except:
-        os.remove(file_name)
         return False
