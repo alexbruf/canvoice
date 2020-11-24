@@ -1,8 +1,7 @@
 # this module should 
 from canvasapi import Canvas
 from datetime import datetime, timedelta
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+from fuzzywuzzy import fuzz, process
 
 API_URL="https://umich.instructure.com"
 
@@ -25,11 +24,12 @@ class CanvasAPI:
               limit=10,
               course=None):
     '''
-    gets the todo items from the start_date to the end_date
+    gets the to-do items from the start_date to the end_date
     start_date: datetime (default now)
     end_date: datetime (default 7 days from now)
     start: int (default 0)
     limit: int (default 10)
+    course: str (default None)
     '''
     active_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
     convert_to_context_code = lambda course: 'course_' + str(course.id)
@@ -96,6 +96,7 @@ class CanvasAPI:
 
     return grades
 
+
   def get_closest_files(self,
                         file_name,
                         class_name):
@@ -158,6 +159,42 @@ class CanvasAPI:
     # Returns user's primary email and the file name 
     return profile["primary_email"], str(file), url_filtered #login.unique_id + "@umich.edu"
 
-  
+  def get_filtered_announcements(self,
+                        start_date=datetime.now() - timedelta(days=7),
+                        end_date=datetime.now(),
+                        start=0,
+                        limit=10,
+                        course=None):
+    '''
+    gets announcements from the start_date to the end_date
+    start_date: datetime (default now)
+    end_date: datetime (default 7 days from now)
+    start: int (default 0)
+    limit: int (default 10)
+    course: str (default None)
+    '''
+    active_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    convert_to_context_code = lambda course: 'course_' + str(course.id)
 
-  
+    # If course was specified, find the closest match
+    courseCode = None
+    if course:
+      activeCourseNames = []
+      for nextCourse in list(active_courses):
+        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+          continue
+        activeCourseNames.append(nextCourse.course_code)
+      courseCode = process.extractOne(course, activeCourseNames)[0]
+
+    context_codes = []
+    for nextCourse in list(active_courses):
+      if course and nextCourse.course_code != courseCode:
+        continue
+      context_codes.append(convert_to_context_code(nextCourse))
+    res = list(self.canvas.get_announcements(context_codes=context_codes,
+                                             start_date=start_date,
+                                             end_date=end_date))
+    if len(res) == 0:
+      return []
+
+    return res[start:limit]
