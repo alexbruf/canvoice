@@ -233,7 +233,7 @@ class CanvasAPI:
     grade = ""
     name = assn.name
     try:
-      grade = str((float(score) / float(pts_poss)) * 100 ) + "%"
+      grade = str(round((float(score) / float(pts_poss)) * 100, 3) ) + "%"
     except:
       print("No score found for " + name)
       return {"score" : "", "name" : name}
