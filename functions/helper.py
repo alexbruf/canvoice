@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import smtplib
+import sys
 
 
 def parse_webhook_request(request_json):
@@ -116,8 +117,7 @@ def send_email(receiver_address, canvas_url):
         session.sendmail(sender_address, receiver_address, text)
         session.quit()
 
-        
-
         return True
     except:
+        print("Emailing error: ", sys.exc_info()[0])
         return False

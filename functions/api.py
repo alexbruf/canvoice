@@ -197,3 +197,50 @@ class CanvasAPI:
       return []
 
     return res[start:limit]
+
+  def get_assignment_info(self, class_name, assignment_name):
+    """
+    Finds closest matching assignment and returns grading info on it, if any exists
+      class_name: string, class name provided by user
+      assignment_name: string, assignment name provided by user 
+    Returns assignemntInfo object containing user's score, possible points, and letter grade if any exist 
+    """
+    # Find course the user is asking about
+    user = self.canvas.get_user('self')
+    courses = user.get_courses(enrollment_state='active')
+    class_scores = []
+    for c in courses:
+      score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
+      class_scores.append(score)
+
+    # Returns the index of *one of* of the maximum values, but I guess we have no way to break ties
+    course = courses[class_scores.index(max(class_scores))]
+    
+    # Find assignment user is asking about 
+    assignments = user.get_assignments(course.id)
+
+    assn_scores = []
+    for assn in assignments:
+      score = fuzz.token_set_ratio(assignment_name.lower(), str(assn.name).lower())
+      assn_scores.append(score)
+
+    assn = assignments[assn_scores.index(max(assn_scores))]
+
+    score = assn.get_submission('self').score
+    pts_poss = assn.points_possible
+    grade = ""
+    name = assn.name
+    try:
+      grade = str((float(score) / float(pts_poss)) * 100 ) + "%"
+    except:
+      print("No score found for " + name)
+      return {"score" : "", "name" : name}
+
+    assn_obj = {
+      "score" : score,
+      "points_possible" : pts_poss,
+      "grade" : grade,
+      "name" : name
+    }
+    
+    return assn_obj
