@@ -158,9 +158,9 @@ def send_file(req):
     # Temporarily downloads target file and gets user's email for sending file
     receiver_address, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
     if not send_email(receiver_address, canvas_url):
-        return "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
+        return "Here's the link to view and download your file: " + canvas_url
 
-    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>\n"
+    response = "Here's the link to view and download your file: " + canvas_url + "\n"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
 
@@ -176,15 +176,17 @@ def process_announcements(req):
         course = req['intent']['params']['class_name']
 
     canvas = CanvasAPI(api_key)
-    announcements = canvas.get_filtered_announcements(course=course) # Specified course or all if nothing specified
+    announcements, contextCodeMap = canvas.get_filtered_announcements(course=course) # Specified course or all if nothing specified
     if len(announcements) == 0:
         return 'There are no announcements from your courses!'
 
     response = 'Here are the most recent course announcements: \n'
+    full_messages = []
     for i, announcement in enumerate(announcements):
-        response += str(i + 1) + ') ' + str(announcement.title) + '\n'
+        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + contextCodeMap[announcement.context_code] + ')\n'
+        full_messages.append(str(announcement.message))
 
-    return response
+    return response, full_messages
 
 def find_assignment(req):
     try:
@@ -204,17 +206,15 @@ def find_assignment(req):
     else:
         return "You got a " + str(assn_obj['score']) + "/" + str(assn_obj['points_possible'])  + " (" + assn_obj['grade'] + ") on " + assn_obj['name']
 
-    
-
 
 def get_full_announcement(req):
-    try:
-        api_key = get_api_key()
-    except:
-        print('no api key!')
-        raise Exception()
+    full_messages = req['session']['params']['full_messages']
+    num_selected = int(req['session']['params']['announcement_num'])
+    if num_selected <= 0 or num_selected >= len(full_messages):
+        return "Please select an announcement number between 1 and " + str(len(full_messages))
 
-    return ''
+    response = full_messages[num_selected - 1]
+    return response
 
 
 def backend_activate(request):
@@ -241,6 +241,9 @@ def backend_activate(request):
     elif req['tag'] == 'grades':
         resp = process_grades(req)
         return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'assignment_grade':
+        resp = find_assignment(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'files':
         resp, hold_files, course_id = process_files(req)
         request_json['sessionInfo']['parameters']['file_codes'] = hold_files
@@ -250,11 +253,9 @@ def backend_activate(request):
         resp = send_file(req)
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'announcements':
-        resp = process_announcements(req)
-        return json.dumps(generate_webhook_response([resp], request_json))
-    elif req['tag'] == 'assignment_grade':
-        resp = find_assignment(req)
-        return json.dumps(generate_webhook_response([resp], request_json))
+        resp, full_messages = process_announcements(req)
+        request_json['sessionInfo']['parameters']['full_messages'] = full_messages
+        return json.dumps(generate_webhook_response([resp], request_json, changeSessionParams=True))
     elif req['tag'] == 'get_full_announcement':
         resp = get_full_announcement(req)
         return json.dumps(generate_webhook_response([resp], request_json))
