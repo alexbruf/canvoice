@@ -185,6 +185,7 @@ def process_announcements(req):
     for i, announcement in enumerate(announcements):
         response += str(i + 1) + ') ' + str(announcement.title) + ' (' + contextCodeMap[announcement.context_code] + ')\n'
         full_messages.append(str(announcement.message))
+    response += 'If you want to view the full message from one of the announcements, respond with the corresponding number\n'
 
     return response, full_messages
 
@@ -254,6 +255,8 @@ def backend_activate(request):
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'announcements':
         resp, full_messages = process_announcements(req)
+        if 'parameters' not in request_json['sessionInfo']:
+            request_json['sessionInfo']['parameters'] = {}
         request_json['sessionInfo']['parameters']['full_messages'] = full_messages
         return json.dumps(generate_webhook_response([resp], request_json, changeSessionParams=True))
     elif req['tag'] == 'get_full_announcement':
