@@ -261,32 +261,3 @@ def backend_activate(request):
 
     # no intent found
     raise Exception()
-
-def main():
-    rawTestReq = {
-        "detectIntentResponseId": "test_id",
-        "intentInfo": {
-            "lastMatchedIntent": "test_intent_id",
-            "parameters": {
-                "class_name": {"resolvedValue": "eecs 376"},
-                "assignment_name": {"resolvedValue": "Midterm Exam"},
-                "test_param2": {"resolvedValue": False}
-            }
-        },
-        "fulfillmentInfo": {"tag": "files"},
-        "sessionInfo": {
-            "session": "test_session_id",
-            "parameters": {
-                "file_num": "1",
-                "file_codes": ["16335343", "16068980", "16504750"],
-                "course_id": "393780"
-            }
-        }
-    }
-    testReq = parse_webhook_request(rawTestReq)
-    print(find_assignment(testReq))
-
-    
-
-if __name__ == '__main__':
-    main()
