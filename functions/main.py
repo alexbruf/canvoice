@@ -185,6 +185,26 @@ def process_announcements(req):
 
     return response
 
+def find_assignment(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+    canvas = CanvasAPI(api_key)
+    # Extract relevant info from intent params 
+    class_name = req['intent']['params']['class_name']
+    assignment_name = req['intent']['params']['assignment_name']
+
+    assn_obj = canvas.get_assignment_info(class_name, assignment_name)
+
+    if assn_obj['score'] == "":
+        return "No score found for " + assn_obj['name']
+    else:
+        return "You got a " + str(assn_obj['score']) + "/" + str(assn_obj['points_possible'])  + " (" + assn_obj['grade'] + ") on " + assn_obj['name']
+
+    
+
 
 def backend_activate(request):
     """Responds to any HTTP request.
@@ -221,8 +241,9 @@ def backend_activate(request):
     elif req['tag'] == 'announcements':
         resp = process_announcements(req)
         return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'assignment_grade':
+        resp = find_assignment(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
     raise Exception()
-
-    
