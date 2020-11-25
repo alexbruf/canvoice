@@ -137,6 +137,7 @@ def process_files(req):
 
     return response, hold_files, course_id
 
+
 def send_file(req):
     try:
         api_key = get_api_key()
@@ -157,9 +158,9 @@ def send_file(req):
     # Temporarily downloads target file and gets user's email for sending file
     receiver_address, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
     if not send_email(receiver_address, canvas_url):
-        return "View and download your file with this link: " + canvas_url
+        return "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
 
-    response = "View your file with this link: " + canvas_url + "\n"
+    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>\n"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
 
@@ -184,6 +185,16 @@ def process_announcements(req):
         response += str(i + 1) + ') ' + str(announcement.title) + '\n'
 
     return response
+
+
+def get_full_announcement(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+
+    return ''
 
 
 def backend_activate(request):
@@ -220,6 +231,9 @@ def backend_activate(request):
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'announcements':
         resp = process_announcements(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'get_full_announcement':
+        resp = get_full_announcement(req)
         return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
