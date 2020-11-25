@@ -136,7 +136,8 @@ class CanvasAPI:
       class_files.pop(max_idx)
 
     return best_files, course.id
-  
+
+
   def fetch_file_to_send(self,
                          course_id,
                          file_id):
@@ -157,6 +158,7 @@ class CanvasAPI:
 
     # Returns user's primary email and the file name 
     return profile["primary_email"], url_filtered 
+
 
   def get_filtered_announcements(self,
                         start_date=datetime.now() - timedelta(days=7),
