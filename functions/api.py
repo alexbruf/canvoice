@@ -239,7 +239,7 @@ class CanvasAPI:
       return {"score" : "", "name" : name}
 
     assn_obj = {
-      "score" : score,
+      "score" : str(round(float(score), 3)),
       "points_possible" : pts_poss,
       "grade" : grade,
       "name" : name
