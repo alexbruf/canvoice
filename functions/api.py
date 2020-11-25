@@ -188,17 +188,21 @@ class CanvasAPI:
       courseCode = process.extractOne(course, activeCourseNames)[0]
 
     context_codes = []
+    contextCodeMap = {}
     for nextCourse in list(active_courses):
       if course and nextCourse.course_code != courseCode:
         continue
-      context_codes.append(convert_to_context_code(nextCourse))
+      context_code = convert_to_context_code(nextCourse)
+      context_codes.append(context_code)
+      contextCodeMap[context_code] = nextCourse.course_code.split()[0] + ' ' + nextCourse.course_code.split()[1]
     res = list(self.canvas.get_announcements(context_codes=context_codes,
                                              start_date=start_date,
                                              end_date=end_date))
     if len(res) == 0:
       return []
 
-    return res[start:limit]
+    return res[start:limit], contextCodeMap
+
 
   def get_assignment_info(self, class_name, assignment_name):
     """
