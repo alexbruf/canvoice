@@ -63,7 +63,9 @@
     }
 
     function authorize() {
-        GoogleAuth.signIn();
+        if(!GoogleAuth.isSignedIn.get()){
+            GoogleAuth.signIn();
+        }
         isAuthorized = true;
     }
 
