@@ -37,7 +37,7 @@
 }
 
 span.badge[contenteditable] {
-    /* display: inline-block; */
+    display: inline-block;
     font-size: large;
 }
 span.badge[contenteditable]:empty::before {
