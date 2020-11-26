@@ -24,7 +24,7 @@ var messages = {
     msg: 'Web Speech API is not supported by this browser. It is only supported by <a href="//www.google.com/chrome">Chrome</a> version 25 or later on desktop and Android mobile.',
     class: 'alert-danger'},
   "stop": {
-      msg: 'Stop listening, click on the microphone icon to restart',
+      msg: 'Stopped listening, click on the microphone icon to restart',
       class: 'alert-success'},
   "copy": {
     msg: 'Content copy to clipboard successfully.',
@@ -52,7 +52,7 @@ $( document ).ready(function() {
     start_button.style.display = 'inline-block';
     recognition = new webkitSpeechRecognition();
     recognition.continuous = false;
-    recognition.interimResults = true;
+    recognition.interimResults = false;
 
     recognition.onstart = function() {
       recognizing = true;
@@ -95,7 +95,7 @@ $( document ).ready(function() {
       if (window.getSelection) {
         window.getSelection().removeAllRanges();
         var range = document.createRange();
-        range.selectNode(document.getElementBId('final_span'));
+        range.selectNode(document.getElementById('final_span'));
         window.getSelection().addRange(range);
       }
     };
@@ -112,6 +112,7 @@ $( document ).ready(function() {
       final_transcript = capitalize(final_transcript);
       final_span.innerHTML = linebreak(final_transcript);
       interim_span.innerHTML = linebreak(interim_transcript);
+      googleRequest();
     };
   }
 });

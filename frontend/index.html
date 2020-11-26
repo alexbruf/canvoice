@@ -14,6 +14,7 @@
     <a href="dev.html">Devoloper Frontend</a>
     <div class="container mt-3">
         <h1 class="text-center">CanVoice</h1>
+        <div id="chat" style="margin-bottom: 15px;"></div>
         <div id="info"></div>
         <div class="float-right">
             <button id="start_button">
@@ -31,7 +32,6 @@
             <div class="col-12 col-md-4 col-lg-6 mt-3 mt-md-0 p-0 m-1">
             </div>
         </div>
-        <div id="chat" style="margin-bottom: 15px;"></div>
         <div class="row col-12 col-md-8 col-lg-6 p-0 m-0">
             <select id="select_language"></select>
             <select id="select_dialect"></select>
@@ -94,9 +94,11 @@
         var show = "<div class='response'><strong>CanVoice:</strong><br>"
         var text = ""
         for (let i = 0; i < data.queryResult.responseMessages.length; i++) {
-            for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
-                text = text + data.queryResult.responseMessages[i].text.text[j] + "\n";
-                show = show + data.queryResult.responseMessages[i].text.text[j].replace("\n", "<br/>") + "<br/>";
+            if ('text' in data.queryResult.responseMessages[i]) {
+                for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
+                    text = text + data.queryResult.responseMessages[i].text.text[j] + "\n";
+                    show = show + data.queryResult.responseMessages[i].text.text[j].replace("\n", "<br/>") + "<br/>";
+                }
             }
         }
         show = show + "</div>"
