@@ -121,8 +121,8 @@ def process_files(req):
         raise Exception()
 
     canvas = CanvasAPI(api_key)
-    file_name = req["intent"]['params']['file_name']
-    class_name = req["intent"]['params']['class_name']
+    file_name = req['session']['params']['file_name']
+    class_name = req['session']['params']['class_name']
 
     # Get 3 closest matching files from closest matching course
     close_files, course_id = canvas.get_closest_files(file_name, class_name)
