@@ -71,8 +71,10 @@ class CanvasAPI:
     courseNameMap = {}
     courseCodeMap = {}
     user_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    #for c in user_courses:
+    #  print(c)
     for nextCourse in user_courses:
-      if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+      if hasattr(nextCourse, 'access_restricted_by_date'):# or nextCourse.enrollment_term_id != 170:
         continue
       courseNameMap[nextCourse.id] = nextCourse.name
       courseCodeMap[nextCourse.id] = nextCourse.course_code
@@ -82,17 +84,22 @@ class CanvasAPI:
     if course:
       courseCode = process.extractOne(course, [*courseCodeMap.values()])[0]
 
-    enrollments = self.canvas.get_user('self').get_enrollments(enrollment_term_id=170)
+    enrollments = self.canvas.get_user('self').get_enrollments()#enrollment_term_id=170)
     grades = []
     for enrollment in enrollments:
+      #print(enrollment.course_id)
       if course and courseCodeMap[enrollment.course_id] != courseCode:
         continue
-      gradeObj = {
-        'code': courseCodeMap[enrollment.course_id],
-        'name': courseNameMap[enrollment.course_id],
-        'score': enrollment.grades['current_score'],
-      }
+      try:
+        gradeObj = {
+          'code': courseCodeMap[enrollment.course_id],
+          'name': courseNameMap[enrollment.course_id],
+          'score': enrollment.grades['current_score'],
+        }
+      except:
+        continue
       grades.append(gradeObj)
+      #print(grades)
 
     return grades
 

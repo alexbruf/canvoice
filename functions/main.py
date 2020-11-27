@@ -197,8 +197,8 @@ def find_assignment(req):
         raise Exception()
     canvas = CanvasAPI(api_key)
     # Extract relevant info from intent params 
-    class_name = req['intent']['params']['class_name']
-    assignment_name = req['intent']['params']['assignment_name']
+    class_name = req['session']['params']['class_name']
+    assignment_name = req['session']['params']['assignment_name']
 
     assn_obj = canvas.get_assignment_info(class_name, assignment_name)
 
