@@ -106,7 +106,8 @@ class CanvasAPI:
 
   def get_closest_files(self,
                         file_name,
-                        class_name):
+                        class_name,
+                        prev_found=None):
     '''
     Gets closest matches to given file_name for files in class with name class_name
       file_name: string, name of desired file
@@ -130,6 +131,9 @@ class CanvasAPI:
 
     scores = []
     for class_file in class_files:
+      # Skip file if it was picked in previous attempt
+      if prev_found and str(class_file.id) in prev_found:
+        continue
       score = fuzz.token_set_ratio(file_name.lower(), str(class_file).lower())
       scores.append(score)
 

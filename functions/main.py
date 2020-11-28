@@ -124,18 +124,24 @@ def process_files(req):
     file_name = req['session']['params']['file_name']
     class_name = req['session']['params']['class_name']
 
+    attempts = 1
+    prev_found = None
+    if 'file_codes' in req['session']['params']:
+        attempts = int(req['session']['params']['attempts']) + 1
+        prev_found = req['session']['params']['file_codes']
+
     # Get 3 closest matching files from closest matching course
-    close_files, course_id = canvas.get_closest_files(file_name, class_name)
+    close_files, course_id = canvas.get_closest_files(file_name, class_name, prev_found=prev_found)
     hold_files = []
     if close_files == "":
-        return "The class specified does not have any files.", hold_files, course_id
+        return "The class specified does not have any files.", hold_files, course_id, attempts
     # Generate response
-    response = "Please select the file you were looking for by saying its number, or say \"none\".\n"
+    response = "Please select the file you were looking for by saying its number, or say \"none\" and we'll look again.\n"
     for i, file in enumerate(close_files):
         response += str(i + 1) + ') ' + str(file) + '\n'
         hold_files.append(file.id)
 
-    return response, hold_files, course_id
+    return response, hold_files, course_id, attempts
 
 
 def send_file(req):
@@ -246,9 +252,10 @@ def backend_activate(request):
         resp = find_assignment(req)
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'files':
-        resp, hold_files, course_id = process_files(req)
+        resp, hold_files, course_id, attempts = process_files(req)
         request_json['sessionInfo']['parameters']['file_codes'] = hold_files
         request_json['sessionInfo']['parameters']['course_id'] = course_id
+        request_json['sessionInfo']['parameters']['attempts'] = attempts
         return json.dumps(generate_webhook_response([resp], request_json, changeSessionParams=True))
     elif req['tag'] == 'send_file':
         resp = send_file(req)
