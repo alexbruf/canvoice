@@ -240,10 +240,10 @@ class CanvasAPI:
     assn = assignments[assn_scores.index(max(assn_scores))]
 
     try:
+      name = assn.name
       score = assn.get_submission('self').score
       pts_poss = assn.points_possible
       grade = ""
-      name = assn.name
       grade = str(round((float(score) / float(pts_poss)) * 100, 3) ) + "%"
     except:
       print("No score found for " + name)
