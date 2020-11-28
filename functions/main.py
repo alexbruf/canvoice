@@ -239,8 +239,12 @@ def backend_activate(request):
         raise Exception()
     
     req = parse_webhook_request(request_json)
-    print(json.dumps(request_json, sort_keys=True, indent=4 * ' '))
+    print(json.dumps(request_json))
     print(json.dumps(req))
+    if 'intent' in req:
+        print(json.dumps(req['intent']))
+    if 'session' in req:
+        print(json.dumps(req['session']))
 
     if req['tag'] == 'todo':
         resp = process_todo(req)
