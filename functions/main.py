@@ -125,13 +125,13 @@ def process_files(req):
     class_name = req['session']['params']['class_name']
 
     attempts = 1
-    prev_found = None
+    prev_found_ = None
     if 'file_codes' in req['session']['params']:
         attempts = int(req['session']['params']['attempts']) + 1
-        prev_found = req['session']['params']['file_codes']
+        prev_found_ = req['session']['params']['file_codes']
 
     # Get 3 closest matching files from closest matching course
-    close_files, course_id = canvas.get_closest_files(file_name, class_name, prev_found=prev_found)
+    close_files, course_id = canvas.get_closest_files(file_name, class_name, prev_found_)
     hold_files = []
     if close_files == "":
         return "The class specified does not have any files.", hold_files, course_id, attempts
@@ -276,3 +276,39 @@ def backend_activate(request):
 
     # no intent found
     raise Exception()
+
+def main():
+    rawTestReq = {
+        "detectIntentResponseId": "test_id",
+        "intentInfo": {
+            "lastMatchedIntent": "test_intent_id",
+            "parameters": {
+                "class_name": {"resolvedValue": "eecs 376"},
+                "file_name": {"resolvedValue": "lecture about dyamic programming"},
+                "test_param2": {"resolvedValue": False}
+            }
+        },
+        "fulfillmentInfo": {"tag": "files"},
+        "sessionInfo": {
+            "session": "test_session_id",
+            "parameters": {
+                "file_num": "1",
+                "file_codes": ["16335343", "16451699", "16448528"],
+                "course_id": "393780",
+                "attempts" : "1",
+                "class_name" : "eecs 376",
+                "file_name" : "lecture about dynamic programming"
+            }
+        }
+    }
+
+    testReq = parse_webhook_request(rawTestReq)
+    #print(process_grades(testReq))
+    #print(process_announcements(testReq))
+    test1, test2, test3, test4 = process_files(testReq)
+    #print(backend_activate(rawTestReq))
+    print(test1, test2, test3, test4)
+    #print(send_file(testReq))
+
+if __name__ == '__main__':
+    main()
