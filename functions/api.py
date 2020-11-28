@@ -206,7 +206,7 @@ class CanvasAPI:
                                              start_date=start_date,
                                              end_date=end_date))
     if len(res) == 0:
-      return []
+      return [], {}
 
     return res[start:limit], contextCodeMap
 

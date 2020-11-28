@@ -176,14 +176,14 @@ def process_announcements(req):
         course = req['intent']['params']['class_name']
 
     canvas = CanvasAPI(api_key)
-    announcements, contextCodeMap = canvas.get_filtered_announcements(course=course) # Specified course or all if nothing specified
+    announcements, contextCodeMap = canvas.get_filtered_announcements(course=course)  # Specified course or all if nothing specified
     if len(announcements) == 0:
-        return 'There are no announcements from your courses!'
+        return 'There are no announcements from your courses!', []
 
     response = 'Here are the most recent course announcements: \n'
     full_messages = []
     for i, announcement in enumerate(announcements):
-        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + contextCodeMap[announcement.context_code] + ')\n'
+        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + str(contextCodeMap[announcement.context_code]) + ')\n'
         full_messages.append(str(announcement.message))
     response += 'If you want to view the full message from one of the announcements, respond with the corresponding number\n'
 
@@ -233,7 +233,7 @@ def backend_activate(request):
         raise Exception()
     
     req = parse_webhook_request(request_json)
-    print(json.dumps(request_json))
+    print(json.dumps(request_json, sort_keys=True, indent=4 * ' '))
     print(json.dumps(req))
 
     if req['tag'] == 'todo':
