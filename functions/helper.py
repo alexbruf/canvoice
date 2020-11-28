@@ -69,6 +69,22 @@ def get_api_key():
 
     raise Exception()
 
+def get_email_password():
+    func_name = os.environ.get('CANVOICE_EMAIL_PW', None)
+    if func_name:
+        #production environment
+        email_pw = os.environ.get('CANVOICE_EMAIL_PW', None)
+        if email_pw:
+            return email_pw
+        else:
+            raise Exception()
+
+    with open('../app_pw.txt', 'r') as file:
+        pw = file.readline()
+        return pw
+
+    raise Exception()
+
 def generate_webhook_response(messages, request_json, changeSessionParams=False):
     '''
     messages: string[]
@@ -96,10 +112,7 @@ def send_email(receiver_address, canvas_url):
         mail_content = "Hello, we've provided a link to your specified file below. Thanks for using CanVoice!\n\n" + canvas_url
         #The mail addresses and password 
         sender_address = 'canvoiceemail@gmail.com'
-        sender_pass = ""
-        f = open('../app_pw.txt', 'r')
-        sender_pass = f.readline()
-        f.close()
+        sender_pass = get_email_password()
 
         #Setup the MIME
         message = MIMEMultipart()
