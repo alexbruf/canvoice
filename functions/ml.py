@@ -1,7 +1,7 @@
 import textract
 import requests
 
-bert_url = 'http://bert.pureuniversaltruth.com:8080'
+bert_url = 'http://bert.server.pureuniversaltruth.com:8080'
 
 def prepare_context(question, pdf_encoded_string):
   with open('/tmp/textr.pdf', 'w') as f:
