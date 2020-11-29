@@ -3,7 +3,7 @@ from canvasapi import Canvas
 from datetime import datetime, timedelta
 from fuzzywuzzy import fuzz, process
 
-API_URL="https://umich.instructure.com"
+API_URL="https://umich-dev.instructure.com"
 
 class CanvasAPI:
   """
