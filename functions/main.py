@@ -165,11 +165,12 @@ def send_file(req):
     # Temporarily downloads target file and gets user's email for sending file
     receiver_address, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
     if not send_email(receiver_address, canvas_url):
-        return "Here's the link to view and download your file: " + canvas_url
+        return "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
 
-    response = "Here's the link to view and download your file: " + canvas_url + "\n"
+    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
+
 
 def process_announcements(req):
     try:
@@ -195,6 +196,7 @@ def process_announcements(req):
     response += 'If you want to view the full message from one of the announcements, respond with the corresponding number \n'
 
     return response, full_messages
+
 
 def find_assignment(req):
     try:
@@ -224,6 +226,7 @@ def get_full_announcement(req):
     response = full_messages[num_selected - 1]
     return response
 
+
 def use_bert(req):
     try:
         api_key = get_api_key()
@@ -246,6 +249,7 @@ def use_bert(req):
     print('answer:', resp['answer'])
 
     return resp['answer']
+
 
 def backend_activate(request):
     """Responds to any HTTP request.
