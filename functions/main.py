@@ -190,9 +190,9 @@ def process_announcements(req):
     response = 'Here are the most recent course announcements: \n'
     full_messages = []
     for i, announcement in enumerate(announcements):
-        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + str(contextCodeMap[announcement.context_code]) + ')\n'
+        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + str(contextCodeMap[announcement.context_code]) + ') \n'
         full_messages.append(str(announcement.message))
-    response += 'If you want to view the full message from one of the announcements, respond with the corresponding number\n'
+    response += 'If you want to view the full message from one of the announcements, respond with the corresponding number \n'
 
     return response, full_messages
 
