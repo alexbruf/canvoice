@@ -242,7 +242,7 @@ def use_bert(req):
     syllabus = canvas.get_syllabus(class_name)
 
     # Use bert here, the above already takes like 3 seconds, this might take awhile
-    question = 'What is the name of this class?'
+    question = req['session']['params']['utterance']
     context = ml.prepare_context(question, syllabus)
     resp = ml.run_bert(context)
     print('score:', resp['score'])
