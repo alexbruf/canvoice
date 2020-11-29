@@ -18,6 +18,7 @@ from api import CanvasAPI
 from datetime import datetime, timedelta
 from flask import escape, jsonify
 import json
+import ml
 
 def process_todo(req):
     try:
@@ -238,8 +239,14 @@ def use_bert(req):
     syllabus = canvas.get_syllabus(class_name)
 
     # Use bert here, the above already takes like 3 seconds, this might take awhile
+    question = 'What is the name of this class?'
+    bert = ml.load_bert()
+    context = ml.prepare_context(question, syllabus)
+    resp = ml.run_bert(bert, context)
+    print('score:', resp['score'])
+    print('answer:', resp['answer'])
 
-    return syllabus
+    return resp['answer']
 
 def backend_activate(request):
     """Responds to any HTTP request.
