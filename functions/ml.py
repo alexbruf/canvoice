@@ -1,16 +1,7 @@
-from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import textract
-import os
+import requests
 
-model_name = "distilbert-base-uncased-distilled-squad"
-
-cache_dir='./model_cache/'
-
-def load_bert():
-  ''' returns a bert object '''
-  os.environ['TRANSFORMERS_CACHE']=cache_dir
-  nlp = pipeline('question-answering', model=model_name, tokenizer=model_name)
-  return nlp
+bert_url = 'http://bert.pureuniversaltruth.com:8080'
 
 def prepare_context(question, pdf_encoded_string):
   with open('/tmp/textr.pdf', 'w') as f:
@@ -26,10 +17,11 @@ def prepare_context(question, pdf_encoded_string):
 
   return QA_input
 
-
-def run_bert(bert, context):
-  res = bert(context)
-  return {
-    'score': res['score'],
-    'answer': res['answer']
-  }
+def run_bert(context):
+  r = requests.post(bert_url, json=context)
+  try: 
+    resp = r.json()
+  except Exception as e:
+    print(e)
+    resp = {'score': 0.0, 'answer': 'no answer'}
+  return resp

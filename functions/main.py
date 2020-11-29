@@ -240,9 +240,8 @@ def use_bert(req):
 
     # Use bert here, the above already takes like 3 seconds, this might take awhile
     question = 'What is the name of this class?'
-    bert = ml.load_bert()
     context = ml.prepare_context(question, syllabus)
-    resp = ml.run_bert(bert, context)
+    resp = ml.run_bert(context)
     print('score:', resp['score'])
     print('answer:', resp['answer'])
 
