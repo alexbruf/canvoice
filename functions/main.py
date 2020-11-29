@@ -167,7 +167,7 @@ def send_file(req):
     if not send_email(receiver_address, canvas_url):
         return "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
 
-    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
+    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a> \n"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
 
@@ -220,7 +220,7 @@ def find_assignment(req):
 def get_full_announcement(req):
     full_messages = req['session']['params']['full_messages']
     num_selected = int(req['session']['params']['announcement_num'])
-    if num_selected <= 0 or num_selected >= len(full_messages):
+    if num_selected <= 0 or num_selected > len(full_messages):
         return "Please select an announcement number between 1 and " + str(len(full_messages))
 
     response = full_messages[num_selected - 1]
