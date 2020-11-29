@@ -166,7 +166,7 @@ def send_file(req):
     if not send_email(receiver_address, canvas_url):
         return "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
 
-    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
+    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a> \n"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
 
