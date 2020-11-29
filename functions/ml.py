@@ -2,7 +2,7 @@ from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 import textract
 import os
 
-model_name = "deepset/roberta-base-squad2"
+model_name = "distilbert-base-uncased-distilled-squad"
 
 cache_dir='./model_cache/'
 
