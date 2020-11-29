@@ -223,6 +223,23 @@ def get_full_announcement(req):
     response = full_messages[num_selected - 1]
     return response
 
+def use_bert(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+    
+    canvas = CanvasAPI(api_key)
+
+    # Should be set up in dialogflow as intent because we need to extract class name (can't do that with no-match)
+    class_name = req['session']['params']['class_name']
+    # Gets the syllabus in whatever format it is stored in and returns in string
+    syllabus = canvas.get_syllabus(class_name)
+
+    # Use bert here, the above already takes like 3 seconds, this might take awhile
+
+    return syllabus
 
 def backend_activate(request):
     """Responds to any HTTP request.
@@ -272,6 +289,9 @@ def backend_activate(request):
         return json.dumps(generate_webhook_response([resp], request_json, changeSessionParams=True))
     elif req['tag'] == 'get_full_announcement':
         resp = get_full_announcement(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'syllabus':
+        resp = use_bert(req)
         return json.dumps(generate_webhook_response([resp], request_json))
 
     # no intent found
