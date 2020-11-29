@@ -261,3 +261,27 @@ class CanvasAPI:
     }
     
     return assn_obj
+
+  def get_syllabus(self, class_name):
+    courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    class_scores = []
+    for c in courses:
+      score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
+      class_scores.append(score)
+
+    # Returns the index of *one of* of the maximum values, but I guess we have no way to break ties
+    course = courses[class_scores.index(max(class_scores))]
+
+    # Find file name closest to syllabus
+    class_files = list(course.get_files())
+    if len(class_files) == 0:
+      return "", 0
+
+    scores = []
+    for class_file in class_files:
+      score = fuzz.token_set_ratio("syllabus", str(class_file).lower())
+      scores.append(score)
+
+    syllabus = class_files[scores.index(max(scores))]
+    return syllabus.get_contents()
+
