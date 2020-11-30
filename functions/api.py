@@ -31,7 +31,7 @@ class CanvasAPI:
     limit: int (default 10)
     course: str (default None)
     '''
-    active_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    active_courses = self.canvas.get_user('self').get_courses()
     convert_to_context_code = lambda course: 'course_' + str(course.id)
 
     # If course was specified, find the closest match
@@ -39,7 +39,7 @@ class CanvasAPI:
     if course:
       activeCourseNames = []
       for nextCourse in list(active_courses):
-        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+        if hasattr(nextCourse, 'access_restricted_by_date'):
           continue
         activeCourseNames.append(nextCourse.course_code)
       courseCode = process.extractOne(course, activeCourseNames)[0]
@@ -70,11 +70,11 @@ class CanvasAPI:
     # Build map from courseID to name
     courseNameMap = {}
     courseCodeMap = {}
-    user_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    user_courses = self.canvas.get_user('self').get_courses()
     #for c in user_courses:
     #  print(c)
     for nextCourse in user_courses:
-      if hasattr(nextCourse, 'access_restricted_by_date'):# or nextCourse.enrollment_term_id != 170:
+      if hasattr(nextCourse, 'access_restricted_by_date'):
         continue
       courseNameMap[nextCourse.id] = nextCourse.name
       courseCodeMap[nextCourse.id] = nextCourse.course_code
@@ -84,7 +84,7 @@ class CanvasAPI:
     if course:
       courseCode = process.extractOne(course, [*courseCodeMap.values()])[0]
 
-    enrollments = self.canvas.get_user('self').get_enrollments()#enrollment_term_id=170)
+    enrollments = self.canvas.get_user('self').get_enrollments()
     grades = []
     for enrollment in enrollments:
       #print(enrollment.course_id)
@@ -115,7 +115,7 @@ class CanvasAPI:
     Returns list of file objects
     '''
     # Find course the user is asking about
-    courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    courses = self.canvas.get_user('self').get_courses()
     class_scores = []
     for c in courses:
       score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
@@ -185,7 +185,7 @@ class CanvasAPI:
     limit: int (default 10)
     course: str (default None)
     '''
-    active_courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    active_courses = self.canvas.get_user('self').get_courses()
     convert_to_context_code = lambda course: 'course_' + str(course.id)
 
     # If course was specified, find the closest match
@@ -193,7 +193,7 @@ class CanvasAPI:
     if course:
       activeCourseNames = []
       for nextCourse in list(active_courses):
-        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+        if hasattr(nextCourse, 'access_restricted_by_date'):
           continue
         activeCourseNames.append(nextCourse.course_code)
       courseCode = process.extractOne(course, activeCourseNames)[0]
@@ -224,7 +224,7 @@ class CanvasAPI:
     """
     # Find course the user is asking about
     user = self.canvas.get_user('self')
-    courses = user.get_courses(enrollment_state='active')
+    courses = user.get_courses()
     class_scores = []
     for c in courses:
       score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
@@ -263,7 +263,7 @@ class CanvasAPI:
     return assn_obj
 
   def get_syllabus(self, class_name):
-    courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    courses = self.canvas.get_user('self').get_courses()
     class_scores = []
     for c in courses:
       score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
