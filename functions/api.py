@@ -39,7 +39,7 @@ class CanvasAPI:
     if course:
       activeCourseNames = []
       for nextCourse in list(active_courses):
-        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+        if hasattr(nextCourse, 'access_restricted_by_date'):
           continue
         activeCourseNames.append(nextCourse.course_code)
       courseCode = process.extractOne(course, activeCourseNames)[0]
@@ -74,7 +74,7 @@ class CanvasAPI:
     #for c in user_courses:
     #  print(c)
     for nextCourse in user_courses:
-      if hasattr(nextCourse, 'access_restricted_by_date'):# or nextCourse.enrollment_term_id != 170:
+      if hasattr(nextCourse, 'access_restricted_by_date'):
         continue
       courseNameMap[nextCourse.id] = nextCourse.name
       courseCodeMap[nextCourse.id] = nextCourse.course_code
@@ -194,7 +194,7 @@ class CanvasAPI:
     if course:
       activeCourseNames = []
       for nextCourse in list(active_courses):
-        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+        if hasattr(nextCourse, 'access_restricted_by_date'):
           continue
         activeCourseNames.append(nextCourse.course_code)
       courseCode = process.extractOne(course, activeCourseNames)[0]
