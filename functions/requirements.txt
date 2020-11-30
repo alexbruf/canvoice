@@ -1,9 +1,8 @@
 flask==1.1.2
-<<<<<<< HEAD
 canvasapi==2.0.0
 fuzzywuzzy==0.18.0
 python-Levenshtein==0.12.0
-argcomplete==1.8.2
+argcomplete==1.12.2
 python-pptx==0.6.5
 #pdfminer.six <-- go back to this after the shebang fix is released (see https://github.com/goulu/pdfminer/issues/27)
 https://github.com/goulu/pdfminer/zipball/e6ad15af79a26c31f4e384d8427b375c93b03533#egg=pdfminer.six
@@ -17,9 +16,7 @@ six>=1.10.0
 requests==2.24.0
 chardet==3.0.4
 google-cloud-storage
-=======
 google-cloud-error-reporting==1.0.0
 canvasapi==2.0.0
 fuzzywuzzy==0.18.0
 python-Levenshtein==0.12.0
->>>>>>> 02b01469f3ad45ac9d3c42413ccb5803d8ea00a9
