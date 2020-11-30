@@ -99,7 +99,7 @@
             if ('text' in data.queryResult.responseMessages[i]) {
                 for (let j = 0; j < data.queryResult.responseMessages[i].text.text.length; j++) {
                     text = text + data.queryResult.responseMessages[i].text.text[j] + "\n";
-                    show = show + data.queryResult.responseMessages[i].text.text[j].replace("\n", "<br/>") + "<br/>";
+                    show = show + data.queryResult.responseMessages[i].text.text[j].replaceAll("\n", "<br/>") + "<br/>";
                 }
             }
         }

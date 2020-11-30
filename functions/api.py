@@ -3,7 +3,7 @@ from canvasapi import Canvas
 from datetime import datetime, timedelta
 from fuzzywuzzy import fuzz, process
 
-API_URL="https://umich.instructure.com"
+API_URL="https://umich-dev.instructure.com"
 
 class CanvasAPI:
   """
@@ -39,7 +39,7 @@ class CanvasAPI:
     if course:
       activeCourseNames = []
       for nextCourse in list(active_courses):
-        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+        if hasattr(nextCourse, 'access_restricted_by_date'):
           continue
         activeCourseNames.append(nextCourse.course_code)
       courseCode = process.extractOne(course, activeCourseNames)[0]
@@ -74,7 +74,7 @@ class CanvasAPI:
     #for c in user_courses:
     #  print(c)
     for nextCourse in user_courses:
-      if hasattr(nextCourse, 'access_restricted_by_date'):# or nextCourse.enrollment_term_id != 170:
+      if hasattr(nextCourse, 'access_restricted_by_date'):
         continue
       courseNameMap[nextCourse.id] = nextCourse.name
       courseCodeMap[nextCourse.id] = nextCourse.course_code
@@ -84,11 +84,12 @@ class CanvasAPI:
     if course:
       courseCode = process.extractOne(course, [*courseCodeMap.values()])[0]
 
-    enrollments = self.canvas.get_user('self').get_enrollments()#enrollment_term_id=170)
+    enrollments = self.canvas.get_user('self').get_enrollments()
     grades = []
     for enrollment in enrollments:
       #print(enrollment.course_id)
-      if course and courseCodeMap[enrollment.course_id] != courseCode:
+      if course and (enrollment.course_id not in courseCodeMap or
+                     courseCodeMap[enrollment.course_id] != courseCode):
         continue
       try:
         gradeObj = {
@@ -115,7 +116,7 @@ class CanvasAPI:
     Returns list of file objects
     '''
     # Find course the user is asking about
-    courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    courses = self.canvas.get_user('self').get_courses()
     class_scores = []
     for c in courses:
       score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
@@ -193,7 +194,7 @@ class CanvasAPI:
     if course:
       activeCourseNames = []
       for nextCourse in list(active_courses):
-        if hasattr(nextCourse, 'access_restricted_by_date') or nextCourse.enrollment_term_id != 170:
+        if hasattr(nextCourse, 'access_restricted_by_date'):
           continue
         activeCourseNames.append(nextCourse.course_code)
       courseCode = process.extractOne(course, activeCourseNames)[0]
@@ -262,6 +263,10 @@ class CanvasAPI:
     
     return assn_obj
 
+  def gen_syllabus_fname(self, class_name):
+    fname = '/tmp/syll_{0}.pdf'.format(class_name)
+    return fname
+
   def get_syllabus(self, class_name):
     courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
     class_scores = []
@@ -283,5 +288,7 @@ class CanvasAPI:
       scores.append(score)
 
     syllabus = class_files[scores.index(max(scores))]
-    return syllabus.get_contents()
+    fname = self.gen_syllabus_fname(class_name)
+    syllabus.download(fname)
+    return fname
 

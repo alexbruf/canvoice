@@ -18,6 +18,11 @@ from api import CanvasAPI
 from datetime import datetime, timedelta
 from flask import escape, jsonify
 import json
+import ml
+from os import path
+import time
+from google.cloud import storage
+bucket_name = 'ml_storage_bucket_canvoice'
 
 def process_todo(req):
     try:
@@ -164,11 +169,12 @@ def send_file(req):
     # Temporarily downloads target file and gets user's email for sending file
     receiver_address, canvas_url = canvas.fetch_file_to_send(course_id, file_id)
     if not send_email(receiver_address, canvas_url):
-        return "Here's the link to view and download your file: " + canvas_url
+        return "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a>"
 
-    response = "Here's the link to view and download your file: " + canvas_url + "\n"
+    response = "<a href=\"" + canvas_url + "\" target=\"_blank\">Click here to view and download your file</a> \n"
     response += "The link has also been sent to the email associated with your Canvas account to view on other devices."
     return response
+
 
 def process_announcements(req):
     try:
@@ -189,11 +195,12 @@ def process_announcements(req):
     response = 'Here are the most recent course announcements: \n'
     full_messages = []
     for i, announcement in enumerate(announcements):
-        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + str(contextCodeMap[announcement.context_code]) + ')\n'
+        response += str(i + 1) + ') ' + str(announcement.title) + ' (' + str(contextCodeMap[announcement.context_code]) + ') \n'
         full_messages.append(str(announcement.message))
-    response += 'If you want to view the full message from one of the announcements, respond with the corresponding number\n'
+    response += 'If you want to view the full message from one of the announcements, respond with the corresponding number \n'
 
     return response, full_messages
+
 
 def find_assignment(req):
     try:
@@ -217,11 +224,40 @@ def find_assignment(req):
 def get_full_announcement(req):
     full_messages = req['session']['params']['full_messages']
     num_selected = int(req['session']['params']['announcement_num'])
-    if num_selected <= 0 or num_selected >= len(full_messages):
+    if num_selected <= 0 or num_selected > len(full_messages):
         return "Please select an announcement number between 1 and " + str(len(full_messages))
 
     response = full_messages[num_selected - 1]
     return response
+
+
+def download_syllabus(req):
+    try:
+        api_key = get_api_key()
+    except:
+        print('no api key!')
+        raise Exception()
+    
+    canvas = CanvasAPI(api_key)
+
+    # Should be set up in dialogflow as intent because we need to extract class name (can't do that with no-match)
+    class_name = req['session']['params']['class_name']
+    # Gets the syllabus in whatever format it is stored in and returns in string
+    syl = canvas.get_syllabus(class_name) # downloads to '/tmp/syll.pdf'
+
+    # Use bert here, the above already takes like 3 seconds, this might take awhile
+    question = req['session']['params']['utterance']
+    context = ml.prepare_context(question, syl)
+    with open(syl + '.json', 'w') as f:
+        json.dump(context, f)
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(syl + '.json')
+    blob.upload_from_filename(syl + '.json')
+
+    print('dumped')
+
+    return 'downloaded and parsed'
 
 def use_bert(req):
     try:
@@ -235,11 +271,39 @@ def use_bert(req):
     # Should be set up in dialogflow as intent because we need to extract class name (can't do that with no-match)
     class_name = req['session']['params']['class_name']
     # Gets the syllabus in whatever format it is stored in and returns in string
-    syllabus = canvas.get_syllabus(class_name)
+    syl_fname = canvas.gen_syllabus_fname(class_name) # downloads to '/tmp/syll.pdf'
 
-    # Use bert here, the above already takes like 3 seconds, this might take awhile
+    # assume that the file is already downloaded
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    if bucket.get_blob(syl_fname + '.json') == None:
+        print('old not downloaded, waiting')
+        timer = 0
+        while (bucket.get_blob(syl_fname + '.json') == None) and timer < 5:
+            time.sleep(1)
+            timer += 1
 
-    return syllabus
+    
+    blob = bucket.blob(syl_fname + '.json')
+    blob.download_to_filename(syl_fname + '.json')
+    
+    with open(syl_fname + '.json', 'rb') as f:
+        print('loading old')
+        j = json.load(f)
+
+        print(j['question'])
+
+        # Use bert here, the above already takes like 3 seconds, this might take awhile
+        # question = req['session']['params']['utterance']
+        resp = ml.run_bert(j)
+        print('ran')
+        print('score:', resp['score'])
+        print('answer:', resp['answer'])
+
+        return resp['answer']
+
+    return 'no answer'
+
 
 def backend_activate(request):
     """Responds to any HTTP request.
@@ -291,6 +355,9 @@ def backend_activate(request):
         resp = get_full_announcement(req)
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'syllabus':
+        resp = download_syllabus(req)
+        return json.dumps(generate_webhook_response([resp], request_json))
+    elif req['tag'] == 'syllabus2':
         resp = use_bert(req)
         return json.dumps(generate_webhook_response([resp], request_json))
 
