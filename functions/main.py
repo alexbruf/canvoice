@@ -18,11 +18,14 @@ from api import CanvasAPI
 from datetime import datetime, timedelta
 from flask import escape, jsonify
 import json
+<<<<<<< HEAD
 import ml
 from os import path
 import time
 from google.cloud import storage
 bucket_name = 'ml_storage_bucket'
+=======
+>>>>>>> f62a476d6d372ff6dc4a86104b6b8663432f88b8
 
 def process_todo(req):
     try:
@@ -231,6 +234,7 @@ def get_full_announcement(req):
     return response
 
 
+<<<<<<< HEAD
 def download_syllabus(req):
     try:
         api_key = get_api_key()
@@ -259,6 +263,8 @@ def download_syllabus(req):
 
     return 'downloaded and parsed'
 
+=======
+>>>>>>> f62a476d6d372ff6dc4a86104b6b8663432f88b8
 def use_bert(req):
     try:
         api_key = get_api_key()
@@ -271,6 +277,7 @@ def use_bert(req):
     # Should be set up in dialogflow as intent because we need to extract class name (can't do that with no-match)
     class_name = req['session']['params']['class_name']
     # Gets the syllabus in whatever format it is stored in and returns in string
+<<<<<<< HEAD
     syl_fname = canvas.gen_syllabus_fname(class_name) # downloads to '/tmp/syll.pdf'
 
     # assume that the file is already downloaded
@@ -303,6 +310,13 @@ def use_bert(req):
         return resp['answer']
 
     return 'no answer'
+=======
+    syllabus = canvas.get_syllabus(class_name)
+
+    # Use bert here, the above already takes like 3 seconds, this might take awhile
+
+    return syllabus
+>>>>>>> f62a476d6d372ff6dc4a86104b6b8663432f88b8
 
 
 def backend_activate(request):
@@ -355,9 +369,12 @@ def backend_activate(request):
         resp = get_full_announcement(req)
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'syllabus':
+<<<<<<< HEAD
         resp = download_syllabus(req)
         return json.dumps(generate_webhook_response([resp], request_json))
     elif req['tag'] == 'syllabus2':
+=======
+>>>>>>> f62a476d6d372ff6dc4a86104b6b8663432f88b8
         resp = use_bert(req)
         return json.dumps(generate_webhook_response([resp], request_json))
 
