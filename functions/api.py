@@ -262,6 +262,10 @@ class CanvasAPI:
     
     return assn_obj
 
+  def gen_syllabus_fname(self, class_name):
+    fname = '/tmp/syll_{0}.pdf'.format(class_name)
+    return fname
+
   def get_syllabus(self, class_name):
     courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
     class_scores = []
@@ -283,5 +287,7 @@ class CanvasAPI:
       scores.append(score)
 
     syllabus = class_files[scores.index(max(scores))]
-    return syllabus.get_contents()
+    fname = self.gen_syllabus_fname(class_name)
+    syllabus.download(fname)
+    return fname
 

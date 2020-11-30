@@ -4,10 +4,7 @@ import requests
 bert_url = 'http://bert.server.pureuniversaltruth.com:8080'
 
 def prepare_context(question, pdf_encoded_string):
-  with open('/tmp/textr.pdf', 'w') as f:
-    f.write(pdf_encoded_string)
-  
-  text = textract.process('/tmp/textr.pdf')
+  text = textract.process(pdf_encoded_string)
   text = text.decode('ascii', 'ignore')
   text = ' '.join(text.split()).replace('\r', ' ').replace('\n', ' ')
   QA_input = {
