@@ -84,7 +84,7 @@ class CanvasAPI:
     if course:
       courseCode = process.extractOne(course, [*courseCodeMap.values()])[0]
 
-    enrollments = self.canvas.get_user('self').get_enrollments()#enrollment_term_id=170)
+    enrollments = self.canvas.get_user('self').get_enrollments()
     grades = []
     for enrollment in enrollments:
       #print(enrollment.course_id)
@@ -115,7 +115,7 @@ class CanvasAPI:
     Returns list of file objects
     '''
     # Find course the user is asking about
-    courses = self.canvas.get_user('self').get_courses(enrollment_state='active')
+    courses = self.canvas.get_user('self').get_courses()
     class_scores = []
     for c in courses:
       score = fuzz.token_set_ratio(class_name.lower(), str(c.course_code).lower())
