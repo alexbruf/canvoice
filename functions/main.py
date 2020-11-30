@@ -279,7 +279,7 @@ def use_bert(req):
     if bucket.get_blob(syl_fname + '.json') == None:
         print('old not downloaded, waiting')
         timer = 0
-        while (bucket.get_blob(syl_fname + '.json') == None) and timer < 2:
+        while (bucket.get_blob(syl_fname + '.json') == None) and timer < 5:
             time.sleep(1)
             timer += 1
 
