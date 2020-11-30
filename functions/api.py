@@ -88,7 +88,8 @@ class CanvasAPI:
     grades = []
     for enrollment in enrollments:
       #print(enrollment.course_id)
-      if course and courseCodeMap[enrollment.course_id] != courseCode:
+      if course and (enrollment.course_id not in courseCodeMap or
+                     courseCodeMap[enrollment.course_id] != courseCode):
         continue
       try:
         gradeObj = {
